@@ -1,5 +1,9 @@
 using EMS.Business.Profiles;
+using EMS.Business.Services;
+using EMS.Business.Services.Implements;
 using EMS.Data.Contexts;
+using EMS.Data.Repositories;
+using EMS.Data.Repositories.Implements;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +21,12 @@ namespace EMS
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<SqlServerContext>(options => 
                 options.UseSqlServer(connectionString));
+
+            //DI 
+            builder.Services.AddScoped<IUserAuthRepository, UserAuthRepository>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IUserAuthService, UserAuthService>();
 
             builder.Services.AddAutoMapper(typeof(MapperProfile));
 

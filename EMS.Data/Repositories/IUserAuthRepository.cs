@@ -9,7 +9,7 @@ namespace EMS.Data.Repositories
 {
     public interface IUserAuthRepository
     {
-        Task<bool> ValidateCredentialsAsync(string username, string password);
+        Task<UserAuth> ValidateCredentialsAsync(string username, string password);
         Task<UserAuth> GetUserAuthByUsernameAsync(string username);
         Task<UserAuth> CreateUserAuthAsync(UserAuth userAuth);
     }

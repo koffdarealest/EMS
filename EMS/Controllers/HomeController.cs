@@ -1,16 +1,21 @@
 using EMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using EMS.Business.Dtos;
+using EMS.Business.Services;
+using EMS.Data.Enums;
 
 namespace EMS.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IUserAuthService _userService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IUserAuthService userService)
         {
             _logger = logger;
+            _userService = userService;
         }
 
         public IActionResult Index()
@@ -18,8 +23,9 @@ namespace EMS.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public async Task<IActionResult> Privacy()
         {
+            await _userService.CreateUserAsync();
             return View();
         }
 
@@ -28,5 +34,7 @@ namespace EMS.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+
     }
 }

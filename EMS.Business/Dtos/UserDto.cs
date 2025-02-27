@@ -19,5 +19,6 @@ namespace EMS.Business.Dtos
         public DateOnly JoinedAt { get; set; }
         public string? Avatar { get; set; }
         public long? DepartmentId { get; set; }
+        public Role Role { get; set; }
     }
 }

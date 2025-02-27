@@ -18,15 +18,17 @@ namespace EMS.Data.Repositories.Implements
             _context = context;
         }
 
-        public async Task<bool> ValidateCredentialsAsync(string username, string password)
+        public async Task<UserAuth> ValidateCredentialsAsync(string username, string password)
         {
-            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
             var user = await GetUserAuthByUsernameAsync(username);
-            if (user == null)
+            if (user != null && BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
             {
-                return false;
+                return user;
             }
-            return BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
+            else
+            {
+                return null;
+            }
         }
 
         public async Task<UserAuth> GetUserAuthByUsernameAsync(string username)
