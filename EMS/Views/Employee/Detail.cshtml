@@ -1,4 +1,5 @@
-﻿@model EMS.Models.UserDetailViewModel
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model EMS.Models.Users.UserDetailViewModel
 @using EMS.Data.Enums
 
 @{
@@ -10,7 +11,7 @@
         <div class="col-md-6">
             <div class="card shadow-lg border-0 rounded-4">
                 <div class="card-body p-4">
-                    <a href="@Url.Action("Index", "Employee")">← Back</a>
+                    <a href="@(Context.Request.Headers["Referer"].ToString() ?? Url.Action("Index", "Employee"))">← Back</a>
                     <h3 class="text-center text-primary mb-4 fw-bold">User Details</h3>
 
                     <!-- Avatar -->

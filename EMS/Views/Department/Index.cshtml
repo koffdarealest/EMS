@@ -1,0 +1,72 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model IEnumerable<EMS.Business.Dtos.DepartmentDto>
+
+@{
+    ViewData["Title"] = "Departments";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-bold">Departments</h2>
+        <a asp-action="Create" class="btn btn-success px-4 py-2 shadow-lg rounded-pill">
+            Add Department
+        </a>
+    </div>
+
+    <div class="row">
+        @foreach (var department in Model)
+        {
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card department-card shadow-sm border-0 rounded-3 position-relative overflow-hidden"
+                     onclick="window.location.href='@Url.Action("Detail", "Department", new { id = department.Id })'">
+
+                    <div class="card-body text-center p-4">
+                        <h5 class="card-title text-primary fw-bold">@department.Name</h5>
+                        <p class="card-text text-muted">
+                            @(string.IsNullOrEmpty(department.Name) ? "No description available" : department.Name)
+                        </p>
+                    </div>
+
+                    <div class="hover-overlay"></div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .department-card {
+        cursor: pointer;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        position: relative;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    }
+
+    .department-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .hover-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 123, 255, 0.1);
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+    }
+
+    .department-card:hover .hover-overlay {
+        opacity: 1;
+    }
+
+    .btn-success {
+        font-size: 1.1rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+</style>

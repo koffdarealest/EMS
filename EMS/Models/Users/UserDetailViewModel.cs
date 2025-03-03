@@ -1,6 +1,6 @@
 ﻿using EMS.Data.Enums;
 
-namespace EMS.Models
+namespace EMS.Models.Users
 {
     public class UserDetailViewModel
     {

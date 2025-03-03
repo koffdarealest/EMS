@@ -9,6 +9,8 @@ namespace EMS.Business.Services
 {
     public interface IDepartmentService
     {
+        Task<DepartmentDto> CreateDepartmentAsync(DepartmentDto department);
         Task<ICollection<DepartmentDto>> GetDepartmentsAsync();
+        Task<DepartmentDto> GetDepartmentByIdAsync(int id);
     }
 }

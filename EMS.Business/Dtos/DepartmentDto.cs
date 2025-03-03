@@ -11,5 +11,6 @@ namespace EMS.Business.Dtos
     public class DepartmentDto : BaseDto<long>
     {
         public string Name { get; set; }
+        public ICollection<UserDto> Users { get; set; } = new List<UserDto>();
     }
 }

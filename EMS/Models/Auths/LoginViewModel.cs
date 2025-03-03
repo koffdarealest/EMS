@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EMS.Models
+namespace EMS.Models.Auths
 {
     public class LoginViewModel
     {

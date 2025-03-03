@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using EMS.Business.Exceptions;
 using EMS.Business.Services;
-using EMS.Models;
+using EMS.Models.Auths;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -67,6 +67,10 @@ namespace EMS.Controllers
                             authProperties);
 
                         return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("authError", "Wrong username or password!");
                     }
                 }
                 catch (DeletedResourceException e)

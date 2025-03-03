@@ -10,5 +10,8 @@ namespace EMS.Data.Repositories
     public interface IDepartmentRepository
     {
         Task<ICollection<Department>> GetDepartmentsAsync();
+        Task<Department> CreateDepartmentAsync(Department department);
+        Task<bool> IsExistDepartmentName(string name);
+        Task<Department> GetDepartmentByIdAsync(int id);
     }
 }

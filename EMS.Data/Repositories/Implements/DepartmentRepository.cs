@@ -22,5 +22,24 @@ namespace EMS.Data.Repositories.Implements
         {
             return await _context.Departments.ToListAsync();
         }
+
+        public async Task<Department> CreateDepartmentAsync(Department department)
+        {
+            _context.Departments.Add(department);
+            await _context.SaveChangesAsync();
+            return department;
+        }
+
+        public async Task<bool> IsExistDepartmentName(string name)
+        {
+            return await _context.Departments.AnyAsync(x => x.Name == name);
+        }
+
+        public async Task<Department> GetDepartmentByIdAsync(int id)
+        {
+            return await _context.Departments
+                .Include(d => d.Users)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
     }
 }

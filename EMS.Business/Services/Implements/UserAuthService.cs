@@ -25,9 +25,12 @@ namespace EMS.Business.Services.Implements
         public async Task<UserDto> ValidateCredentialsAsync(string username, string password)
         {
             var userAuth = await _userAuthRepository.ValidateCredentialsAsync(username, password);
-            if (userAuth.User.IsDeleted)
+            if (userAuth != null)
             {
-                throw new DeletedResourceException("Your account has been deleted");
+                if (userAuth.User.IsDeleted)
+                {
+                    throw new DeletedResourceException("Your account has been deleted");
+                }
             }
             return _mapper.Map<UserDto>(userAuth?.User);
         }

@@ -1,7 +1,8 @@
 ﻿using EMS.Data.Enums;
 using System.ComponentModel.DataAnnotations;
+using EMS.Models.Validations;
 
-namespace EMS.Models
+namespace EMS.Models.Users
 {
     public class EditUserViewModel
     {
@@ -15,6 +16,7 @@ namespace EMS.Models
         [Required(ErrorMessage = "Phone is required")]
         public required string Phone { get; set; }
         public Duty Duty { get; set; }
+        [JoinAtBeforeNow]
         public DateOnly JoinedAt { get; set; }
         public string? Avatar { get; set; }
         public long? DepartmentId { get; set; }

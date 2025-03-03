@@ -6,6 +6,7 @@ using EMS.Business.Services;
 using EMS.Data.Enums;
 using EMS.Data.Pagination;
 using EMS.Models;
+using EMS.Models.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;

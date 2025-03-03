@@ -1,0 +1,69 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model EMS.Business.Dtos.DepartmentDto
+
+@{
+    ViewData["Title"] = "Department Details";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-4 p-4">
+        <h1 class="text-center text-primary fw-bold">@Model.Name</h1>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <a asp-action="Index" class="btn btn-outline-secondary px-4 py-2 rounded-pill">
+                ← Back
+            </a>
+        </div>
+
+        @if (Model.Users != null && Model.Users.Any())
+        {
+            <div class="row">
+                @foreach (var user in Model.Users)
+                {
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm border-0 rounded-4">
+                            <a asp-controller="Employee" asp-action="Detail" asp-route-id="@user.Id" 
+                               class="text-decoration-none">
+                                <div class="card-body text-center border shadow-sm p-3 rounded" style="cursor: pointer; transition: transform 0.2s;">
+                                    <img src="@(!string.IsNullOrEmpty(user.Avatar) ? user.Avatar : Url.Content("~/images/default-avatar.png"))"
+                                         class="rounded-circle mb-3" width="100" height="100" 
+                                         style="object-fit: cover; border: 3px solid #007bff;">
+                                    <h5 class="fw-bold text-dark">@user.Fullname</h5>
+                                    <p class="text-muted">@user.Duty</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-center text-muted">No employees in this department.</p>
+        }
+    </div>
+</div>
+
+<style>
+    .card {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .btn-primary {
+        font-size: 0.9rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .btn-outline-secondary {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+</style>
