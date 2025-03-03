@@ -15,6 +15,8 @@ namespace EMS.Business.Profiles
         {
             CreateMap<User, UserDto>();
             CreateMap<UserDto, User>();
+            CreateMap<Department, DepartmentDto>();
+            CreateMap<DepartmentDto, Department>();
         }
     }
 }

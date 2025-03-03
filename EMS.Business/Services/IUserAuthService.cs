@@ -10,6 +10,7 @@ namespace EMS.Business.Services
     public interface IUserAuthService
     {
         Task<UserDto> ValidateCredentialsAsync(string username, string password);
-        Task<bool> CreateUserAsync();
+        Task<long> CreateUserAuthAsync(long createdUserId, string username, string password);
+        Task<bool> IsExistUsername(string username);
     }
 }

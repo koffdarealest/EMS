@@ -1,3 +1,4 @@
+using EMS.Business.Clouds;
 using EMS.Business.Profiles;
 using EMS.Business.Services;
 using EMS.Business.Services.Implements;
@@ -27,8 +28,18 @@ namespace EMS
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IUserAuthService, UserAuthService>();
+            builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+            builder.Services.AddScoped<IAzureBlobService, AzureBlobService>();
 
             builder.Services.AddAutoMapper(typeof(MapperProfile));
+
+            builder.Services.AddSignalR();
+
+            builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddSingleton<AzureBlobService>();
+
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>

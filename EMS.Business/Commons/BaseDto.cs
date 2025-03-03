@@ -1,6 +1,13 @@
-﻿namespace EMS.Data.Commons
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using EMS.Data.Commons;
+
+namespace EMS.Business.Commons
 {
-    public interface IEntity<T>
+    public class BaseDto<T> : IEntity<T>
     {
         public T Id { get; set; }
         public bool IsDeleted { get; set; }

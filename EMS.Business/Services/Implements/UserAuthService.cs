@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using EMS.Business.Dtos;
+using EMS.Business.Exceptions;
 using EMS.Data.Entities;
 using EMS.Data.Repositories;
 
@@ -24,18 +25,27 @@ namespace EMS.Business.Services.Implements
         public async Task<UserDto> ValidateCredentialsAsync(string username, string password)
         {
             var userAuth = await _userAuthRepository.ValidateCredentialsAsync(username, password);
+            if (userAuth.User.IsDeleted)
+            {
+                throw new DeletedResourceException("Your account has been deleted");
+            }
             return _mapper.Map<UserDto>(userAuth?.User);
         }
 
-        public async Task<bool> CreateUserAsync()
+        public async Task<long> CreateUserAuthAsync(long createdUserId, string username, string password)
         {
-            _userAuthRepository.CreateUserAuthAsync(new UserAuth
+            var userAuth = new UserAuth
             {
-                UserId = 1,
-                Username = "admin",
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("111")
-            });
-            return true;
+                UserId = createdUserId,
+                Username = username,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(password)
+            };
+            var createdUserAuth = await _userAuthRepository.CreateUserAuthAsync(userAuth);
+            return createdUserAuth.UserId;
+        }
+        public async Task<bool> IsExistUsername(string username)
+        {
+            return await _userAuthRepository.IsExistUsername(username);
         }
     }
 }

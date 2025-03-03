@@ -40,9 +40,14 @@ namespace EMS.Data.Repositories.Implements
 
         public async Task<UserAuth> CreateUserAuthAsync(UserAuth userAuth)
         {
-            await _context.UserAuths.AddAsync(userAuth);
+            var userCreated = await _context.UserAuths.AddAsync(userAuth);
             await _context.SaveChangesAsync();
-            return userAuth;
+            return userCreated.Entity;
         }
+
+        public async Task<bool> IsExistUsername(string username)
+        {
+            return await _context.UserAuths.AnyAsync(ua => ua.Username == username);
+        }        
     }
 }

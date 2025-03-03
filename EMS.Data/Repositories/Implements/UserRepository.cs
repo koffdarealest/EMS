@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EMS.Data.Contexts;
 using EMS.Data.Entities;
+using EMS.Data.Enums;
 using EMS.Data.Pagination;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,28 +20,79 @@ namespace EMS.Data.Repositories.Implements
             _context = context;
         }
 
-        public Task<PaginatedList<User>> GetUsersAsync(int pageIndex, int pageSize)
+        public async Task<PaginatedList<User>> GetUsersAsync(string searchTerm, int? departmentId, int? gender, DateOnly? joinDate, int pageIndex, int pageSize)
         {
-            throw new NotImplementedException();
+            IQueryable<User> query = _context.Users
+                .Include(u => u.Department)
+                .Where(u => u.IsDeleted == false && u.Role != Role.Admin)
+                .OrderBy(u => u.Fullname)
+                .AsNoTracking();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(u => 
+                    u.Fullname.Contains(searchTerm) ||
+                    u.Department.Name.Contains(searchTerm)
+                    );
+            }
+
+            if (departmentId.HasValue)
+            {
+                query = query.Where(u => u.DepartmentId == departmentId);
+            }
+
+            if (gender.HasValue)
+            {
+                query = query.Where(u => u.Gender == (Gender) gender.Value);
+            }
+
+            if (joinDate.HasValue)
+            {
+                query = query.Where(u => u.JoinedAt >= joinDate.Value);
+            }
+
+            return await PaginatedList<User>.CreateAsync(query, pageIndex, pageSize);
         }
 
-        public async Task<User> GetUserByIdAsync(long userId)
+        public async Task<User> GetUserByIdAsync(long userId, bool isIncludeDepartment)
         {
-            return await _context.Users.FindAsync(userId);
+            if (!isIncludeDepartment)
+            {
+                return await _context.Users.FindAsync(userId);
+            }
+            else
+            {
+                return await _context.Users
+                    .Include(u => u.Department)
+                    .FirstOrDefaultAsync(u => u.Id == userId);
+            }
         }
 
         public async Task<User> CreateUserAsync(User user)
         {
-            await _context.Users.AddAsync(user);
+            var userCreated = await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
-            return user;
+            return userCreated.Entity;
+
         }
 
         public async Task<User> UpdateUserAsync(User user)
         {
-            _context.Users.Update(user);
+            var userExist = await _context.Users.FindAsync(user.Id);
+            if (userExist == null)
+            {
+                return null;
+            }
+            _context.Entry(userExist).CurrentValues.SetValues(user);
+
+            _context.Entry(userExist).Property(x => x.CreatedAt).IsModified = false;
+            _context.Entry(userExist).Property(x => x.CreatedBy).IsModified = false;
+            _context.Entry(userExist).Property(x => x.DeletedAt).IsModified = false;
+            _context.Entry(userExist).Property(x => x.DeletedBy).IsModified = false;
+            _context.Entry(userExist).Property(x => x.IsDeleted).IsModified = false;
+            //var userUpdated = _context.Users.Update(user);
             await _context.SaveChangesAsync();
-            return user;
+            return userExist;
         }
 
         public async Task<User> DeleteUserAsync(long userId)
@@ -53,9 +105,28 @@ namespace EMS.Data.Repositories.Implements
             else
             {
                 user.IsDeleted = true;
-                _context.Users.Update(user);
+                user.DeletedAt = DateTime.Now;
+                var userUpdated = _context.Users.Update(user);
                 await _context.SaveChangesAsync();
-                return user;
+                return userUpdated.Entity;
+            }
+        }
+
+        public async Task<User> DeleteUserAsync(long userId, long deletedBy)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return null;
+            }
+            else
+            {
+                user.IsDeleted = true;
+                user.DeletedAt = DateTime.Now;
+                user.DeletedBy = deletedBy;
+                var userUpdated = _context.Users.Update(user);
+                await _context.SaveChangesAsync();
+                return userUpdated.Entity;
             }
         }
     }

@@ -12,5 +12,6 @@ namespace EMS.Data.Repositories
         Task<UserAuth> ValidateCredentialsAsync(string username, string password);
         Task<UserAuth> GetUserAuthByUsernameAsync(string username);
         Task<UserAuth> CreateUserAuthAsync(UserAuth userAuth);
+        Task<bool> IsExistUsername(string username);
     }
 }

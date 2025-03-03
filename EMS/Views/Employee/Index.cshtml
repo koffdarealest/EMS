@@ -1,0 +1,133 @@
+﻿@model EMS.Data.Pagination.PaginatedList<EMS.Business.Dtos.UserDto>
+@using EMS.Data.Enums
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "User List";
+    var departmentNames = ViewData["DepartmentNames"] as Dictionary<long, string>;
+
+}
+
+<div class="container mt-4">
+    <h2 class="text-primary text-center mb-4">Employees</h2>
+    <a href="@Url.Action("Create")" class="btn btn-primary mb-4">Create New Event</a>
+    <!-- Search & Filters -->
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <input type="text" class="form-control" name="searchTerm" placeholder="Search by name..." value="@ViewData["SearchTerm"]">
+        </div>
+        <div class="col-md-3">
+            @Html.DropDownList("departmentId", (SelectList) ViewData["Departments"], "All Departments", new { @class="form-select", value = ViewData["selectedDepartment"]})
+        </div>
+        <div class="col-md-2">
+            <select class="form-select" name="gender">
+                <option value="">All Genders</option>
+                @foreach (Gender gender in Enum.GetValues(typeof(Gender)))
+                {
+                    <option value="@((int)gender)" selected="@(ViewData["selectedGender"]?.ToString() == ((int)gender).ToString())">@gender</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <input type="date" class="form-control" name="joinedAt" value="@ViewData["JoinedAt"]">
+        </div>
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+    </form>
+
+    <!-- User Table -->
+    <div class="table-responsive shadow-sm rounded-3 p-3 bg-white">
+        <table class="table table-hover align-middle">
+            <thead class="table-primary">
+                <tr>
+                    <th>#</th>
+                    <th>Avatar</th>
+                    <th>Fullname</th>
+                    <th>Gender</th>
+                    <th>Phone</th>
+                    <th>Department</th>
+                    <th>Duty</th>
+                    <th>Joined At</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var user in Model)
+                    {
+                        <tr class ="user-row" data-user-id="@user.Id">
+                            <td>@user.Id</td>
+                            <td>
+                                <img src="@(string.IsNullOrEmpty(user.Avatar) ? "/images/default-avatar.png" : user.Avatar)" class="rounded-circle" width="50" height="50"
+                                     style="object-fit: cover; cursor: pointer; transition: transform 0.2s;"/>
+                            </td>
+                            <td>@user.Fullname</td>
+                            <td>@user.Gender</td>
+                            <td>@user.Phone</td>
+                            <td>@(
+                                (user.DepartmentId.HasValue && departmentNames != null && departmentNames.ContainsKey(user.DepartmentId.Value)) 
+                                    ? departmentNames[user.DepartmentId.Value] 
+                                    : "N/A"
+                                )</td>
+                            <td>@user.Duty</td>
+                            <td>@user.JoinedAt.ToString("yyyy-MM-dd")</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="11" class="text-center text-muted">No users found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            @if (Model.HasPreviousPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { searchTerm = ViewData["SearchTerm"], departmentId = ViewData["selectedDepartment"], gender = ViewData["selectedGender"], joinedAt = ViewData["JoinedAt"], pageIndex = Model.PageIndex - 1 })">Previous</a>
+                </li>
+            }
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(Model.PageIndex == i ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { searchTerm = ViewData["SearchTerm"], departmentId = ViewData["selectedDepartment"], gender = ViewData["selectedGender"], joinedAt = ViewData["JoinedAt"], pageIndex = i })">@i</a>
+                </li>
+            }
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { searchTerm = ViewData["SearchTerm"], departmentId = ViewData["selectedDepartment"], gender = ViewData["selectedGender"], joinedAt = ViewData["JoinedAt"], pageIndex = Model.PageIndex + 1 })">Next</a>
+                </li>
+            }
+        </ul>
+    </nav>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".user-row").forEach(row => {
+            row.addEventListener("click", function () {
+                let userId = this.getAttribute("data-user-id");
+                window.location.href = `/Employee/Detail/${userId}`;
+            });
+        });
+    });
+</script>
+
+<style>
+    .user-row {
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+        .user-row:hover {
+            background-color: #f8f9fa; /* Màu xám nhẹ */
+        }
+</style>

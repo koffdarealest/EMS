@@ -1,17 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using EMS.Data.Commons;
 using EMS.Data.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace EMS.Data.Contexts
 {
     public partial class SqlServerContext : DbContext
     {
-        public SqlServerContext(DbContextOptions<SqlServerContext> options) : base(options)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public SqlServerContext(DbContextOptions<SqlServerContext> options, IHttpContextAccessor httpContextAccessor) : base(options)
         {
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public virtual DbSet<ActivityLog> ActivityLogs { get; set; }
@@ -66,5 +71,44 @@ namespace EMS.Data.Contexts
         }   
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            UpdateAuditFields();
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void UpdateAuditFields()
+        {
+            ChangeTracker.DetectChanges();
+            var userId = long.Parse(_httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var entries = ChangeTracker.Entries().ToList();
+
+            foreach (var entry in entries)
+            {
+                dynamic entity = entry.Entity;
+                if (entry.State == EntityState.Detached || entry.State == EntityState.Unchanged || !(entity is BaseEntity<long>))
+                {
+                    continue;
+                }
+
+                if (entry.State == EntityState.Added)
+                {
+                    entity.CreatedAt = DateTime.Now;
+                    entity.CreatedBy = userId;
+                }
+                else if (entry.State == EntityState.Modified)
+                {
+                    entity.UpdatedAt = DateTime.Now;
+                    entity.UpdatedBy = userId;
+                } 
+                else if (entry.State == EntityState.Deleted)
+                {
+                    entity.DeletedAt = DateTime.Now;
+                    entity.DeletedBy = userId;
+                }
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using EMS.Business.Exceptions;
 using EMS.Business.Services;
 using EMS.Models;
 using Microsoft.AspNetCore.Authentication;
@@ -25,6 +26,11 @@ namespace EMS.Controllers
             return View();
         }
 
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LoginAsync(LoginViewModel model)
@@ -36,30 +42,41 @@ namespace EMS.Controllers
 
             if (ModelState.IsValid)
             {
-                var result = await _userAuthService.ValidateCredentialsAsync(model.Username, model.Password);
-                if (result != null)
+                try
                 {
-                    var claims = new List<Claim>
+                    var result = await _userAuthService.ValidateCredentialsAsync(model.Username, model.Password);
+                    if (result != null)
                     {
-                        new Claim(ClaimTypes.Name, result.Fullname),
-                        new Claim(ClaimTypes.NameIdentifier, result.Id.ToString()),
-                        new Claim(ClaimTypes.Role, result.Role.ToString())
-                    };
+                        var claims = new List<Claim>
+                        {
+                            new Claim(ClaimTypes.Name, result.Fullname),
+                            new Claim(ClaimTypes.NameIdentifier, result.Id.ToString()),
+                            new Claim(ClaimTypes.Role, result.Role.ToString())
+                        };
 
-                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                    var authProperties = new AuthenticationProperties
-                    {
-                        IsPersistent = true,
-                        ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10)
-                    };
+                        var claimsIdentity =
+                            new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        var authProperties = new AuthenticationProperties
+                        {
+                            IsPersistent = true,
+                            ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10)
+                        };
 
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-                        new ClaimsPrincipal(claimsIdentity),
-                        authProperties);
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                            new ClaimsPrincipal(claimsIdentity),
+                            authProperties);
 
-                    return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Index", "Home");
+                    }
                 }
-                ModelState.AddModelError("authError", "Invalid username or password!");
+                catch (DeletedResourceException e)
+                {
+                    ModelState.AddModelError("authError", e.Message);
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError("authError", "Invalid username or password!");
+                }
             }
             else
             {

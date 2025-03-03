@@ -25,7 +25,6 @@ namespace EMS.Controllers
 
         public async Task<IActionResult> Privacy()
         {
-            await _userService.CreateUserAsync();
             return View();
         }
 

@@ -1,0 +1,134 @@
+﻿@model EMS.Models.CreateUserViewModel
+@using EMS.Data.Enums
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Add New User";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-body p-4">
+                    <a href="@Url.Action("Index", "Employee")">← Back</a>
+                    <h3 class="text-center text-primary mb-4">Add New User</h3>
+
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="mb-3 text-center d-flex flex-column align-content-center">
+                            <label for="avatarPreview">
+                                <img id="avatarPreview" class="rounded-circle" width="150" height="150"
+                                     style="object-fit: cover; cursor: pointer; transition: transform 0.2s;"
+                                     onmouseover="this.style.transform='scale(1.1)';"
+                                     onmouseout="this.style.transform='scale(1)';"/>/>
+                            </label>
+                            <input type="file" class="form-control mt-2 d-none" id="avatarInput" name="avatarFile" accept="image/*">
+                            <button type="button" id="removeAvatar" class="btn btn-danger btn-sm mt-2 w-25 mx-auto">Remove Image</button>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Fullname</label>
+                            <input type="text" class="form-control" asp-for="Fullname" required/>
+                            <span class="text-danger small" asp-validation-for="Fullname"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Birthdate</label>
+                            <input type="date" class="form-control" asp-for="Birth" required/>
+                            <span class="text-danger small" asp-validation-for="Birth"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Gender</label>
+                            <select class="form-select" asp-for="Gender">
+                                @foreach (var gender in Enum.GetValues(typeof(Gender)))
+                                {
+                                    <option value="@((int)gender)" selected="@(ViewData["selectedGender"]?.ToString() == ((int)gender).ToString())">@gender</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Phone</label>
+                            <input type="text" class="form-control" asp-for="Phone" required/>
+                            <span class="text-danger small" asp-validation-for="Phone"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Address</label>
+                            <input type="text" class="form-control" asp-for="Address"/>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Duty</label>
+                            <select class="form-select" asp-for="Duty">
+                                @foreach (var duty in Enum.GetValues(typeof(Duty)))
+                                {
+                                    <option value="@((int)duty)" selected="@(ViewData["selectedDuty"]?.ToString() == ((int)duty).ToString())">@duty</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Department</label>
+                            @Html.DropDownListFor(m => m.DepartmentId, (SelectList)ViewData["Departments"], "Select Department", new { @class = "form-select" })
+                        </div>
+
+
+                        <div class="mb-3">
+                            <label class="form-label">Joined At</label>
+                            <input type="date" class="form-control" asp-for="JoinedAt" required/>
+                            <span class="text-danger small" asp-validation-for="JoinedAt"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" asp-for="Username" required/>
+                            <span class="text-danger small" asp-validation-for="Username"></span>
+                            <span class="text-danger small">@Html.ValidationMessage("usernameError")</span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" asp-for="Password" required/>
+                            <span class="text-danger small" asp-validation-for="Password"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Role</label>
+                            <select class="form-select" asp-for="Role">
+                                @foreach (var role in Enum.GetValues(typeof(Role)))
+                                {
+                                    <option value="@((int)role)" selected="@(ViewData["selectedDuty"]?.ToString() == ((int)role).ToString())">@role</option>
+                                }
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Add</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById("avatarInput").addEventListener("change", function (event) {
+            let reader = new FileReader();
+            reader.onload = function () {
+                document.getElementById("avatarPreview").src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        });
+
+        document.getElementById("avatarPreview").addEventListener("click", function () {
+            document.getElementById("avatarInput").click();
+        });
+
+        document.getElementById("removeAvatar").addEventListener("click", function () {
+            document.getElementById("avatarPreview").src = "";
+            document.getElementById("avatarInput").value = "";
+        });
+    </script>
+}
