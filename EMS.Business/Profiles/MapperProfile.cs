@@ -17,6 +17,12 @@ namespace EMS.Business.Profiles
             CreateMap<UserDto, User>();
             CreateMap<Department, DepartmentDto>();
             CreateMap<DepartmentDto, Department>();
+            CreateMap<Salary, SalaryDto>();
+            CreateMap<SalaryDto, Salary>();
+            CreateMap<Bonus, BonusDto>();
+            CreateMap<BonusDto, Bonus>();
+            CreateMap<SalaryPayment, SalaryPaymentDto>();
+            CreateMap<SalaryPaymentDto, SalaryPayment>();
         }
     }
 }

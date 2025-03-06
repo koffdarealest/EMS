@@ -1,3 +1,4 @@
+using System.Threading.RateLimiting;
 using EMS.Business.Clouds;
 using EMS.Business.Profiles;
 using EMS.Business.Services;
@@ -31,6 +32,12 @@ namespace EMS
             builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             builder.Services.AddScoped<IDepartmentService, DepartmentService>();
             builder.Services.AddScoped<IAzureBlobService, AzureBlobService>();
+            builder.Services.AddScoped<ISalaryRepository, SalaryRepository>();
+            builder.Services.AddScoped<ISalaryService, SalaryService>();
+            builder.Services.AddScoped<ISalaryPaymentRepository, SalaryPaymentRepository>();
+            builder.Services.AddScoped<ISalaryPaymentService, SalaryPaymentService>();
+            builder.Services.AddScoped<IBonusRepository, BonusRepository>();
+            builder.Services.AddScoped<IBonusService, BonusService>();
 
             builder.Services.AddAutoMapper(typeof(MapperProfile));
 
@@ -40,6 +47,17 @@ namespace EMS
 
             builder.Services.AddSingleton<AzureBlobService>();
 
+            //builder.Services.AddRateLimiter(options =>
+            //{
+            //    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+            //        RateLimitPartition.GetFixedWindowLimiter(
+            //            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            //            key => new FixedWindowRateLimiterOptions
+            //            {
+            //                PermitLimit = 2,
+            //                Window = TimeSpan.FromMinutes(1)
+            //            }));
+            //});
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
@@ -72,10 +90,13 @@ namespace EMS
 
             app.UseAuthorization();
 
+            //app.UseRateLimiter();
+
+            //app.MapGet("/", () => Results.Ok($"Hello world")).RequireRateLimiting("fixed");
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
-
             app.Run();
         }
     }

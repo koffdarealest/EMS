@@ -1,4 +1,5 @@
-﻿using EMS.Data.Enums;
+﻿using EMS.Business.Dtos;
+using EMS.Data.Enums;
 
 namespace EMS.Models.Users
 {
@@ -15,5 +16,7 @@ namespace EMS.Models.Users
         public string DepartmentName { get; set; } = "N/A";
         public DateOnly JoinedAt { get; set; }
         public Role Role { get; set; }
+        public ICollection<BonusDto> Bonuses { get; set; } = new List<BonusDto>();
+        public SalaryDto? ActiveSalary { get; set; }
     }
 }

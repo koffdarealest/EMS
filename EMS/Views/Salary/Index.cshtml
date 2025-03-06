@@ -1,0 +1,100 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model IEnumerable<EMS.Business.Dtos.SalaryDto>
+
+@{
+    ViewData["Title"] = "Salary List";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-primary fw-bold">Employee Salaries</h2>
+        <a asp-action="Create" class="btn btn-success px-4 shadow-sm">
+            Add Salary
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered shadow-sm">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>#</th>
+                    <th>Employee</th>
+                    <th>Basic Salary</th>
+                    <th>Allowance</th>
+                    <th>Effective Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var salary in Model)
+                    {
+                        <tr class="align-middle">
+                            <td class="text-center">@salary.UserId</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="@(!string.IsNullOrEmpty(salary.User?.Avatar) ? salary.User.Avatar : "/images/default-avatar.png")"
+                                         class="rounded-circle me-2 border border-3"
+                                         width="40" height="40" style="object-fit: cover;">
+                                    <span class="fw-bold">@salary.User?.Fullname</span>
+                                </div>
+                            </td>
+                            <td class="text-end text-success fw-bold">@salary.Basic.ToString("C")</td>
+                            <td class="text-end text-primary">@salary.Allowance.ToString("C")</td>
+                            <td class="text-center">@salary.EffectiveAt.ToString("MM/dd/yyyy")</td>
+                            <td class="text-center">
+                                <a asp-action="Edit" asp-route-id="@salary.Id" class="btn btn-warning btn-sm">
+                                    Edit
+                                </a>
+                                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-id="@salary.Id">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">No salary records available.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger" id="confirmDeleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this salary record?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post">
+                    <input type="hidden" name="id" id="deleteSalaryId" />
+                    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var deleteModal = document.getElementById("confirmDeleteModal");
+        deleteModal.addEventListener("show.bs.modal", function (event) {
+            var button = event.relatedTarget;
+            var salaryId = button.getAttribute("data-id");
+            document.getElementById("deleteSalaryId").value = salaryId;
+            document.getElementById("deleteForm").action = "/Salary/Delete/" + salaryId;
+        });
+    });
+</script>

@@ -22,7 +22,7 @@
                 {
                     <div class="col-md-6 col-lg-4 mb-4">
                         <div class="card h-100 shadow-sm border-0 rounded-4">
-                            <a asp-controller="Employee" asp-action="Detail" asp-route-id="@user.Id" 
+                            <a asp-controller="User" asp-action="Detail" asp-route-id="@user.Id" 
                                class="text-decoration-none">
                                 <div class="card-body text-center border shadow-sm p-3 rounded" style="cursor: pointer; transition: transform 0.2s;">
                                     <img src="@(!string.IsNullOrEmpty(user.Avatar) ? user.Avatar : Url.Content("~/images/default-avatar.png"))"

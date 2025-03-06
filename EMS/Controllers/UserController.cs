@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Runtime.InteropServices.JavaScript;
+using System.Security.Claims;
 using EMS.Business.Clouds;
 using EMS.Business.Dtos;
 using EMS.Business.Exceptions;
@@ -13,14 +14,14 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EMS.Controllers
 {
-    public class EmployeeController : Controller
+    public class UserController : Controller
     {
         private readonly IUserService _userService;
         private readonly IDepartmentService _departmentService;
         private readonly IAzureBlobService _azureBlobService;
 
 
-        public EmployeeController(IUserService userService, IDepartmentService departmentService, IAzureBlobService azureBlobService)
+        public UserController(IUserService userService, IDepartmentService departmentService, IAzureBlobService azureBlobService)
         {
             _userService = userService;
             _departmentService = departmentService;
@@ -45,7 +46,6 @@ namespace EMS.Controllers
             return View();
         }
 
-
         public async Task<IActionResult> Detail(long? id)
         {
             if (id == null)
@@ -53,10 +53,14 @@ namespace EMS.Controllers
                 return NotFound();
             }
 
-            var user = await _userService.GetUserByIdAsync(id.Value, true);
-
+            var user = await _userService.GetUserByIdAsync(id.Value, u => u.Department, u => u.Bonuses, u => u.Salaries);
             if (user != null)
             {
+                var currentSalary = user.Salaries
+                    .Where(s => s.EffectiveAt <= DateTime.Today && s.IsDeleted == false)
+                    .OrderByDescending(s => s.EffectiveAt)
+                    .FirstOrDefault();
+                var notDeletedBonuses = user.Bonuses.Where(b => !b.IsDeleted).ToList();
                 var userDetail = new UserDetailViewModel
                 {
                     Id = user.Id,
@@ -66,10 +70,12 @@ namespace EMS.Controllers
                     Birth = user.Birth,
                     Address = user.Address,
                     Duty = user.Duty,
-                    DepartmentName = user.DepartmentDto.Name,
+                    DepartmentName = user.Department.Name,
                     JoinedAt = user.JoinedAt,
                     Role = user.Role,
-                    Avatar = user.Avatar
+                    Avatar = user.Avatar,
+                    Bonuses = notDeletedBonuses,
+                    ActiveSalary = currentSalary
                 };
                 return View(userDetail);
             }
@@ -87,7 +93,7 @@ namespace EMS.Controllers
                 return NotFound();
             }
 
-            var user = await _userService.GetUserByIdAsync(id.Value, false);
+            var user = await _userService.GetUserByIdAsync(id.Value);
 
             if (user != null)
             {

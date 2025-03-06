@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -58,14 +59,6 @@ namespace EMS.Business.Services.Implements
             return new PaginatedList<UserDto>(userDtos, paginatedUsers.TotalCount, pageIndex, pageSize);
         }
 
-        public async Task<UserDto> GetUserByIdAsync(long id, bool isIncludeDepartment)
-        {
-            var user = await _userRepository.GetUserByIdAsync(id, isIncludeDepartment);
-            var userDto = _mapper.Map<UserDto>(user);
-            userDto.DepartmentDto = _mapper.Map<DepartmentDto>(user.Department);
-            return userDto;
-        }
-
         public async Task<UserDto> UpdateUserAsync(UserDto userDto)
         {
             var user = _mapper.Map<User>(userDto);
@@ -80,6 +73,18 @@ namespace EMS.Business.Services.Implements
                 throw new ArgumentNullException("Id is null");
             }
             return _mapper.Map<UserDto>(await _userRepository.DeleteUserAsync(id.Value, deletedBy.Value));
+        }
+
+        public async Task<ICollection<UserDto>> GetEmployeesAsync()
+        {
+            var employees = await _userRepository.GetEmployeesAsync();
+            return _mapper.Map<ICollection<UserDto>>(employees);
+        }
+
+        public async Task<UserDto> GetUserByIdAsync(long userId, params Expression<Func<User, object>>[] includes)
+        {
+            var user = await _userRepository.GetUserByIdAsync(userId, includes);
+            return _mapper.Map<UserDto>(user);
         }
     }
 }

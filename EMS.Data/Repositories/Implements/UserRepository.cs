@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using EMS.Data.Contexts;
@@ -52,20 +53,6 @@ namespace EMS.Data.Repositories.Implements
             }
 
             return await PaginatedList<User>.CreateAsync(query, pageIndex, pageSize);
-        }
-
-        public async Task<User> GetUserByIdAsync(long userId, bool isIncludeDepartment)
-        {
-            if (!isIncludeDepartment)
-            {
-                return await _context.Users.FindAsync(userId);
-            }
-            else
-            {
-                return await _context.Users
-                    .Include(u => u.Department)
-                    .FirstOrDefaultAsync(u => u.Id == userId);
-            }
         }
 
         public async Task<User> CreateUserAsync(User user)
@@ -128,6 +115,26 @@ namespace EMS.Data.Repositories.Implements
                 await _context.SaveChangesAsync();
                 return userUpdated.Entity;
             }
+        }
+
+        public async Task<ICollection<User>> GetEmployeesAsync()
+        {
+            return await _context.Users
+                .Where(u => u.IsDeleted == false && u.Role != Role.Admin)
+                .ToListAsync();
+        }
+
+        public async Task<User> GetUserByIdAsync(long userId, params Expression<Func<User, object>>[] includes)
+        {
+            IQueryable<User> query = _context.Users
+                .Where(u => u.Id == userId && u.IsDeleted == false);
+
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            return await query.FirstOrDefaultAsync();
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EMS.Business.Commons;
 using EMS.Data.Commons;
+using EMS.Data.Entities;
 
 namespace EMS.Business.Dtos
 {
@@ -21,6 +22,9 @@ namespace EMS.Business.Dtos
         public string? Avatar { get; set; }
         public long? DepartmentId { get; set; }
         public Role Role { get; set; }
-        public DepartmentDto? DepartmentDto { get; set; }
+        public DepartmentDto? Department { get; set; }
+
+        public ICollection<BonusDto> Bonuses { get; set; } = new List<BonusDto>();
+        public ICollection<SalaryDto> Salaries { get; set; } = new List<SalaryDto>();
     }
 }

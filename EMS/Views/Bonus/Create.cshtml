@@ -1,0 +1,54 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model EMS.Models.Bonus.CreateBonusViewModel
+@{
+    ViewData["Title"] = "Add Bonus/Penalty";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center text-primary fw-bold mb-4">Add Bonus / Penalty</h2>
+
+    <div class="card shadow-lg p-4">
+        <form asp-action="Create" method="post">
+            <div class="d-flex align-items-center mb-4">
+                <img src="@(Model.Avatar ?? "/images/default-avatar.png")"
+                     class="rounded-circle border border-3 shadow-sm" width="80" height="80"
+                     style="object-fit: cover;" />
+
+                <div class="ms-3">
+                    <h5 class="fw-bold mb-1">@Model.Fullname</h5>
+                    <input type="hidden" asp-for="UserId" value="@Model.UserId" />
+                </div>
+            </div>
+
+            <!-- Chọn Thưởng / Phạt -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">Type</label>
+                <div class="d-flex gap-3">
+                    <input type="radio" class="btn-check" name="IsPenalty" id="bonus" value="false" @(Model.IsPenalty ? "" : "checked") />
+                    <label class="btn btn-outline-success fw-bold" for="bonus">Bonus</label>
+
+                    <input type="radio" class="btn-check" name="IsPenalty" id="penalty" value="true" @(Model.IsPenalty ? "checked" : "") />
+                    <label class="btn btn-outline-danger fw-bold" for="penalty">Penalty</label>
+                </div>
+            </div>
+
+            <!-- Nhập số tiền -->
+            <div class="mb-3">
+                <label asp-for="Amount" class="form-label fw-bold">Amount</label>
+                <input asp-for="Amount" type="number" class="form-control shadow-sm" min="0" required />
+            </div>
+
+            <!-- Nhập lý do -->
+            <div class="mb-3">
+                <label asp-for="Reason" class="form-label fw-bold">Reason</label>
+                <textarea asp-for="Reason" class="form-control shadow-sm" rows="3"></textarea>
+            </div>
+
+            <!-- Nút Submit -->
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary px-5 fw-bold shadow-sm">Save</button>
+                <a asp-action="Index" class="btn btn-secondary px-4 ms-2">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
