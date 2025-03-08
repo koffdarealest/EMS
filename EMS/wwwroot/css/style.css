@@ -47,3 +47,8 @@
 .animate-bounce:hover {
     animation: bounce 0.5s ease-in-out;
 }
+
+body {
+    background: linear-gradient(to right, #74ebd5, #acb6e5);
+    font-family: Arial, sans-serif;
+}

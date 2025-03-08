@@ -1,0 +1,137 @@
+﻿@using EMS.Data.Enums
+@model ICollection<EMS.Business.Dtos.AttendanceDto>
+
+@{
+    ViewData["Title"] = "Attendance Management";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center text-primary">📋 Attendance Management</h2>
+
+    <!-- Date Filter -->
+    <div class="row my-3">
+        <div class="col-md-4">
+            <label for="dateFilter" class="form-label fw-bold">📅 Select Date:</label>
+            <input type="date" id="dateFilter" class="form-control" value="@ViewBag.SelectedDate?.ToString("yyyy-MM-dd")">
+        </div>
+    </div>
+
+    <!-- Attendance Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>👤 Employee</th>
+                    <th>⏰ Check-in Time</th>
+                    <th>📷 Check-in Photo</th>
+                    <th>⏰ Check-out Time</th>
+                    <th>📷 Check-out Photo</th>
+                    <th>⌛ Worked Hours</th>
+                    <th>📊 Status</th>
+                    <th>⚙️ Actions</th>
+                </tr>
+            </thead>
+            <tbody id="attendanceBody">
+                @if (Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@(item.UserId)</td>
+                            <td>@(item.User?.Fullname ?? "No data")</td>
+                            <td>@(item.CheckIn?.ToString("HH:mm:ss") ?? "Not checked in")</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.CheckInImage))
+                                {
+                                    <img src="@item.CheckInImage" class="img-thumbnail preview-image" 
+                                         style="max-width: 120px; height: auto; cursor: pointer;" 
+                                         data-bs-toggle="modal" data-bs-target="#imageModal" 
+                                         data-src="@item.CheckInImage" />
+                                    
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No photo</span>
+                                }
+                            </td>
+                            <td>@(item.CheckOut?.ToString("HH:mm:ss") ?? "Not checked out")</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.CheckOutImage))
+                                {
+                                    <img src="@item.CheckOutImage" class="img-thumbnail preview-image"
+                                         style="max-width: 120px; height: auto; cursor: pointer;" 
+                                         data-bs-toggle="modal" data-bs-target="#imageModal" 
+                                         data-src="@item.CheckOutImage" />
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No photo</span>
+                                }
+                            </td>
+                            <td>
+                                @{
+                                    int totalMinutes = (int)(item.WorkedHours * 60);
+                                    int hours = totalMinutes / 60;
+                                    int minutes = totalMinutes % 60;
+                                }
+                                @(hours)h @(minutes)m
+                                <br/>
+                                <a href="/Bonus/Create?userId=@item.UserId" class="btn btn-sm btn-primary ms-2 mt-1">➕ Bonus / ➖ Penalty </a>
+                            </td>
+                            <td>
+                                <span class="badge 
+                                    @(item.Status == AttendanceStatus.Present ? "bg-success" : 
+                                    item.Status == AttendanceStatus.Absent ? "bg-danger" :
+                                    item.Status == AttendanceStatus.Leave ? "bg-warning" :
+                                    "bg-info")">
+                                    @item.Status
+                                </span>
+                            </td>
+                            <td>
+                                <a href="/Attendance/Edit/@item.Id" class="btn btn-warning btn-sm">✏️ Edit</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="9" class="text-center text-muted">No attendance data available</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Check Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" class="img-fluid" style="max-width: 100%;" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("dateFilter").addEventListener("change", function () {
+        const selectedDate = this.value;
+        window.location.href = `/Attendance/Index?date=${selectedDate}`;
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        const previewImages = document.querySelectorAll(".preview-image");
+        const modalImage = document.getElementById("modalImage");
+
+        previewImages.forEach(img => {
+            img.addEventListener("click", function () {
+                modalImage.src = this.getAttribute("data-src");
+            });
+        });
+    });
+</script>

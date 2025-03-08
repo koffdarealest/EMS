@@ -10,6 +10,7 @@ namespace EMS.Data.Enums
     {
         Present,
         Absent,
-        Leave
+        Leave,
+        Working
     }
 }

@@ -23,6 +23,8 @@ namespace EMS.Business.Profiles
             CreateMap<BonusDto, Bonus>();
             CreateMap<SalaryPayment, SalaryPaymentDto>();
             CreateMap<SalaryPaymentDto, SalaryPayment>();
+            CreateMap<Attendance, AttendanceDto>();
+            CreateMap<AttendanceDto, Attendance>();
         }
     }
 }

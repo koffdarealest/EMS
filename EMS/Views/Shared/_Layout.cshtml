@@ -42,10 +42,18 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Salary" asp-action="Index">Salaries</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Attendance" asp-action="Index">Attendances</a>
+                            </li>
                         }
                     </ul>
                     @if (User.Identity.IsAuthenticated)
                     {
+                        <ul class="navbar-nav ms-auto ">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Attendance" asp-action="CheckIn">Check In</a>
+                            </li>
+                        </ul>
                         <span class="navbar-text">
                             Hello, @User.Identity.Name
                         </span>

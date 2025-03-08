@@ -1,0 +1,40 @@
+﻿@using EMS.Data.Enums
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model EMS.Models.Attendance.EditAttendanceViewModel
+
+@{
+    ViewData["Title"] = "Edit Attendance";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center text-primary">✏️ Edit Attendance</h2>
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="UserId" />
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">👤 Employee Name:</label>
+            <input type="text" class="form-control" asp-for="Fullname" readonly />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">⏰ Check-in Time:</label>
+            <input type="datetime-local" class="form-control" asp-for="CheckIn" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">⏰ Check-out Time:</label>
+            <input type="datetime-local" class="form-control" asp-for="CheckOut" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">📊 Attendance Status:</label>
+            <select class="form-select" asp-for="Status" asp-items="Html.GetEnumSelectList<AttendanceStatus>()"></select>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-success">💾 Save Changes</button>
+            <a asp-action="Index" asp-route-date="@Model.CheckIn" class="btn btn-secondary">🔙 Cancel</a>
+        </div>
+    </form>
+</div>

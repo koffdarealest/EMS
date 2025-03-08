@@ -31,13 +31,16 @@ namespace EMS
             builder.Services.AddScoped<IUserAuthService, UserAuthService>();
             builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             builder.Services.AddScoped<IDepartmentService, DepartmentService>();
-            builder.Services.AddScoped<IAzureBlobService, AzureBlobService>();
+            builder.Services.AddScoped<IAzureBlobAvatarService, AzureBlobAvatarService>();
+            builder.Services.AddScoped<IAzureBlobCheckService, AzureBlobCheckService>();
             builder.Services.AddScoped<ISalaryRepository, SalaryRepository>();
             builder.Services.AddScoped<ISalaryService, SalaryService>();
             builder.Services.AddScoped<ISalaryPaymentRepository, SalaryPaymentRepository>();
             builder.Services.AddScoped<ISalaryPaymentService, SalaryPaymentService>();
             builder.Services.AddScoped<IBonusRepository, BonusRepository>();
             builder.Services.AddScoped<IBonusService, BonusService>();
+            builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
+            builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 
             builder.Services.AddAutoMapper(typeof(MapperProfile));
 
@@ -45,7 +48,8 @@ namespace EMS
 
             builder.Services.AddHttpContextAccessor();
 
-            builder.Services.AddSingleton<AzureBlobService>();
+            builder.Services.AddSingleton<AzureBlobAvatarService>();
+            builder.Services.AddSingleton<AzureBlobCheckService>();
 
             //builder.Services.AddRateLimiter(options =>
             //{

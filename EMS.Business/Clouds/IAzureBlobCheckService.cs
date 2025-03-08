@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace EMS.Business.Clouds
 {
-    public interface IAzureBlobService
+    public interface IAzureBlobCheckService
     {
-        Task<string> UploadAvatarAsync(Stream fileStream, string fileName);
+        Task<string> UploadCheckPhotoAsync(Stream fileStream, string fileName);
     }
 }

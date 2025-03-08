@@ -18,14 +18,14 @@ namespace EMS.Controllers
     {
         private readonly IUserService _userService;
         private readonly IDepartmentService _departmentService;
-        private readonly IAzureBlobService _azureBlobService;
+        private readonly IAzureBlobAvatarService _azureBlobAvatarService;
 
 
-        public UserController(IUserService userService, IDepartmentService departmentService, IAzureBlobService azureBlobService)
+        public UserController(IUserService userService, IDepartmentService departmentService, IAzureBlobAvatarService azureBlobAvatarService)
         {
             _userService = userService;
             _departmentService = departmentService;
-            _azureBlobService = azureBlobService;
+            _azureBlobAvatarService = azureBlobAvatarService;
         }
 
         [Authorize(Roles = "Admin")]
@@ -136,7 +136,7 @@ namespace EMS.Controllers
             {
                 using var stream = avatarFile.OpenReadStream();
                 string fileName = $"{Guid.NewGuid()}_{avatarFile.FileName}";
-                avatarUrl = await _azureBlobService.UploadAvatarAsync(stream, fileName);
+                avatarUrl = await _azureBlobAvatarService.UploadAvatarAsync(stream, fileName);
             }
 
             UserDto userDto = new UserDto
@@ -203,7 +203,7 @@ namespace EMS.Controllers
             {
                 using var stream = avatarFile.OpenReadStream();
                 string fileName = $"{Guid.NewGuid()}_{avatarFile.FileName}";
-                avatarUrl = await _azureBlobService.UploadAvatarAsync(stream, fileName);
+                avatarUrl = await _azureBlobAvatarService.UploadAvatarAsync(stream, fileName);
                 userDto.Avatar = avatarUrl;
             }
 

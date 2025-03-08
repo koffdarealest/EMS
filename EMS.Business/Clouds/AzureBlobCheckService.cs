@@ -1,27 +1,27 @@
-﻿using System;
+﻿using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
-using Microsoft.Extensions.Configuration;
 
 namespace EMS.Business.Clouds
 {
-    public class AzureBlobService : IAzureBlobService
+    public class AzureBlobCheckService : IAzureBlobCheckService
     {
         private readonly BlobServiceClient _blobServiceClient;
         private readonly string _containerName;
 
-        public AzureBlobService(IConfiguration configuration)
+        public AzureBlobCheckService(IConfiguration configuration)
         {
-            var connectionString = configuration["AzureStorage:ConnectionString"];
-            _containerName = configuration["AzureStorage:ContainerName"];
+            var connectionString = configuration["AzureCheckStorage:ConnectionString"];
+            _containerName = configuration["AzureCheckStorage:ContainerName"];
             _blobServiceClient = new BlobServiceClient(connectionString);
         }
 
-        public async Task<string> UploadAvatarAsync(Stream fileStream, string fileName)
+        public async Task<string> UploadCheckPhotoAsync(Stream fileStream, string fileName)
         {
             try
             {

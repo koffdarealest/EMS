@@ -11,3 +11,4 @@ INSERT INTO [dbo].[Departments]
 use emstest
 select * from Users
 select * from UserAuths
+select * from Bonuses
