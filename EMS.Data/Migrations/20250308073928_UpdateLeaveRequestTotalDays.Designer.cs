@@ -4,6 +4,7 @@ using EMS.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EMS.Data.Migrations
 {
     [DbContext(typeof(SqlServerContext))]
-    partial class SqlServerContextModelSnapshot : ModelSnapshot
+    [Migration("20250308073928_UpdateLeaveRequestTotalDays")]
+    partial class UpdateLeaveRequestTotalDays
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -231,9 +234,6 @@ namespace EMS.Data.Migrations
                     b.Property<int>("RemainingDay")
                         .HasColumnType("int");
 
-                    b.Property<int>("RemainingSickDay")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -248,8 +248,7 @@ namespace EMS.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("LeaveBalances");
                 });
@@ -643,8 +642,8 @@ namespace EMS.Data.Migrations
             modelBuilder.Entity("EMS.Data.Entities.LeaveBalance", b =>
                 {
                     b.HasOne("EMS.Data.Entities.User", "User")
-                        .WithOne("LeaveBalance")
-                        .HasForeignKey("EMS.Data.Entities.LeaveBalance", "UserId")
+                        .WithMany("LeaveBalances")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -752,7 +751,7 @@ namespace EMS.Data.Migrations
 
                     b.Navigation("Bonuses");
 
-                    b.Navigation("LeaveBalance");
+                    b.Navigation("LeaveBalances");
 
                     b.Navigation("LeaveRequests");
 

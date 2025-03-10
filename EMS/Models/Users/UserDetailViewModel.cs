@@ -18,5 +18,7 @@ namespace EMS.Models.Users
         public Role Role { get; set; }
         public ICollection<BonusDto> Bonuses { get; set; } = new List<BonusDto>();
         public SalaryDto? ActiveSalary { get; set; }
+        public ICollection<LeaveRequestDto> LeaveRequests { get; set; } = new List<LeaveRequestDto>();
+        public LeaveBalanceDto? LeaveBalance { get; set; }
     }
 }

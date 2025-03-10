@@ -25,6 +25,11 @@ namespace EMS.Business.Profiles
             CreateMap<SalaryPaymentDto, SalaryPayment>();
             CreateMap<Attendance, AttendanceDto>();
             CreateMap<AttendanceDto, Attendance>();
+            CreateMap<LeaveBalance, LeaveBalanceDto>();
+            CreateMap<LeaveBalanceDto, LeaveBalance>();
+            CreateMap<LeaveRequest, LeaveRequestDto>();
+            CreateMap<LeaveRequestDto, LeaveRequest>()
+                .AfterMap((src, dest) => dest.UpdateTotalDays());
         }
     }
 }

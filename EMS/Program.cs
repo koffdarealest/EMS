@@ -41,6 +41,10 @@ namespace EMS
             builder.Services.AddScoped<IBonusService, BonusService>();
             builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
             builder.Services.AddScoped<IAttendanceService, AttendanceService>();
+            builder.Services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
+            builder.Services.AddScoped<ILeaveRequestService, LeaveRequestService>();
+            builder.Services.AddScoped<ILeaveBalanceRepository, LeaveBalanceRepository>();
+            builder.Services.AddScoped<ILeaveBalanceService, LeaveBalanceService>();
 
             builder.Services.AddAutoMapper(typeof(MapperProfile));
 

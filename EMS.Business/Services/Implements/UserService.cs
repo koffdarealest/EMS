@@ -18,12 +18,14 @@ namespace EMS.Business.Services.Implements
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
         private readonly IUserAuthService _userAuthService;
+        private readonly ILeaveBalanceRepository _leaveBalanceRepository;
 
-        public UserService(IUserRepository userRepository, IMapper mapper, IUserAuthService userAuthService)
+        public UserService(IUserRepository userRepository, IMapper mapper, IUserAuthService userAuthService, ILeaveBalanceRepository leaveBalanceRepository)
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _userAuthService = userAuthService;
+            _leaveBalanceRepository = leaveBalanceRepository;
         }
 
         public async Task<UserDto> CreateUserAsync(UserDto userDto)
@@ -48,6 +50,14 @@ namespace EMS.Business.Services.Implements
                 return null;
             }
 
+            LeaveBalanceDto leaveBalanceDto = new LeaveBalanceDto
+            {
+                Year = DateTime.Now.Year,
+                RemainingDay = 12,
+                RemainingSickDay = 30,
+                UserId = createdUser.Id
+            };
+            await _leaveBalanceRepository.CreateAsync(_mapper.Map<LeaveBalance>(leaveBalanceDto));
             await _userAuthService.CreateUserAuthAsync(createdUser.Id, username, password);
             return userDto;
         }

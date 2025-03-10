@@ -1,0 +1,79 @@
+﻿@using EMS.Data.Enums
+@model ICollection<EMS.Business.Dtos.LeaveRequestDto>
+
+@{
+    ViewData["Title"] = "Leave Requests Management";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center text-primary mb-5">📋 Leave Requests</h2>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>👤 Employee</th>
+                    <th>📅 From</th>
+                    <th>📅 To</th>
+                    <th>🗓️ Total Days</th>
+                    <th>📄 Type</th>
+                    <th>📝 Reason</th>
+                    <th>📊 Status</th>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <th>✔️ Action</th>
+                    }
+                    
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.UserId</td>
+                            <td>@(item.User?.Fullname ?? "Unknown")</td>
+                            <td>@item.From.ToString("f")</td>
+                            <td>@item.To.ToString("f")</td>
+                            <td>@item.TotalDays days</td>
+                            <td>
+                                <span class="badge bg-info">@item.Type</span>
+                            </td>
+                            <td>@(string.IsNullOrEmpty(item.Reason) ? "No reason provided" : item.Reason)</td>
+                            <td>
+                                <span class="badge @(item.Status == LeaveRequestStatus.Approved ? "bg-success" :
+                                                   item.Status == LeaveRequestStatus.Pending ? "bg-warning" : "bg-danger")">
+                                    @item.Status
+                                </span>
+                            </td>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <td>
+                                    @if (item.Status == LeaveRequestStatus.Pending)
+                                    {
+                                        <a href="/Leave/Approve?id=@item.Id&isApprove=true&numOfDay=@item.TotalDays&type=@item.Type.ToString()" class="btn btn-sm btn-success mb-1">✔ Approve</a>
+                                        <a href="/Leave/Reject?id=@item.Id&isApprove=false&numOfDay=@item.TotalDays&type=@item.Type.ToString()" class="btn btn-sm btn-danger">❌ Reject</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                        </span>
+                                    }
+                                </td>
+                            }
+
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="9" class="text-center text-muted">No leave requests available</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

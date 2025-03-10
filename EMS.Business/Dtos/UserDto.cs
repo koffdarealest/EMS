@@ -23,7 +23,7 @@ namespace EMS.Business.Dtos
         public long? DepartmentId { get; set; }
         public Role Role { get; set; }
         public DepartmentDto? Department { get; set; }
-
+        public LeaveBalanceDto? LeaveBalance { get; set; }
         public ICollection<BonusDto> Bonuses { get; set; } = new List<BonusDto>();
         public ICollection<SalaryDto> Salaries { get; set; } = new List<SalaryDto>();
     }

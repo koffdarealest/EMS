@@ -74,6 +74,10 @@ namespace EMS.Business.Services.Implements
 
         public async Task<AttendanceDto> UpdateAttendanceAsync(AttendanceDto attendanceDto)
         {
+            if (attendanceDto.CheckOut < attendanceDto.CheckIn)
+            {
+                throw new ArgumentException("Check out time must be greater than check in time");
+            }
             return _mapper.Map<AttendanceDto>(await _attendanceRepository.UpdateAsync(_mapper.Map<Attendance>(attendanceDto)));
         }
     }

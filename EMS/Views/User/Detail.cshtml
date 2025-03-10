@@ -53,40 +53,43 @@
                     </div>
 
                     <!-- Buttons -->
-                    <div class="text-center mt-4">
-                        <a href="/User/Edit/@Model.Id" class="btn btn-warning px-4 me-2 shadow-sm">Edit</a>
-                        <button type="button" class="btn btn-danger px-4 me-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-user-id="@Model.Id">
-                            Delete
-                        </button>
-                        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="confirmDeleteModalLabel">Confirm Deletion</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        Are you sure you want to delete this user?
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                        <form id="deleteForm" method="post">
-                                            <input type="hidden" name="id" id="deleteUserId" />
-                                            <button type="submit" class="btn btn-danger">Confirm Delete</button>
-                                        </form>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="text-center mt-4">
+                            <a href="/User/Edit/@Model.Id" class="btn btn-warning px-4 me-2 shadow-sm">Edit</a>
+                            <button type="button" class="btn btn-danger px-4 me-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-user-id="@Model.Id">
+                                Delete
+                            </button>
+                            <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="confirmDeleteModalLabel">Confirm Deletion</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to delete this user?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <form id="deleteForm" method="post">
+                                                <input type="hidden" name="id" id="deleteUserId"/>
+                                                <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            <a asp-controller="Salary" asp-action="Create" asp-route-userId="@Model.Id"
+                               class="btn btn-success px-4 me-2 shadow-sm">
+                                Add Salary
+                            </a>
+                            <a asp-controller="Bonus" asp-action="Create" asp-route-userId="@Model.Id"
+                               class="btn btn-info px-4 me-2 shadow-sm">
+                                Add Bonus/Penalty
+                            </a>
                         </div>
-                        <a asp-controller="Salary" asp-action="Create" asp-route-userId="@Model.Id" 
-                           class="btn btn-success px-4 me-2 shadow-sm">
-                            Add Salary
-                        </a>
-                        <a asp-controller="Bonus" asp-action="Create" asp-route-userId="@Model.Id"
-                           class="btn btn-info px-4 me-2 shadow-sm">
-                            Add Bonus/Penalty
-                        </a>
-                    </div>
+                    }
                     <h5 class="text-primary mt-4 fw-bold text-center">Current Salary</h5>
                     @if (Model.ActiveSalary != null)
                     {
@@ -151,6 +154,33 @@
                     {
                         <p class="text-muted">No bonus or penalty history found.</p>
                     }
+                    <h5 class="text-primary mt-4 fw-bold text-center">Remaining Leave Days</h5>
+                    @if (Model.LeaveBalance != null)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped shadow-sm">
+                                <thead class="table-dark">
+                                <tr>
+                                    <th>Year</th>
+                                    <th>Remaining Leave Days</th>
+                                    <th>Remaining Sick Days</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>@Model.LeaveBalance.Year</td>
+                                    <td>@Model.LeaveBalance.RemainingDay</td>
+                                    <td>@Model.LeaveBalance.RemainingSickDay</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No leave balance information available.</p>
+                    }
+
                     
                     <!-- Delete Bonus Modal -->
                     <div class="modal fade" id="confirmDeleteBonusModal" tabindex="-1" aria-labelledby="confirmDeleteBonusModalLabel" aria-hidden="true">

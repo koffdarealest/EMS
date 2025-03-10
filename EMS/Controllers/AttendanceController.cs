@@ -164,6 +164,11 @@ namespace EMS.Controllers
                 await _attendanceService.UpdateAttendanceAsync(attendanceDto);
                 return RedirectToAction("Index", new {date = model.CheckIn});
             }
+            catch (ArgumentException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);

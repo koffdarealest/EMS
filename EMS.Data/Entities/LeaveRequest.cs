@@ -12,13 +12,38 @@ namespace EMS.Data.Entities
     {
         public LeaveType Type { get; set; }
         public string? Reason { get; set; }
-        public DateTime From { get; set; }
-        public DateTime To { get; set; }
-        public int TotalDays { get; set; }
+        public DateTime From
+        {
+            get => _from;
+            set
+            {
+                _from = value;
+                UpdateTotalDays();
+            }
+        }
+        public DateTime To
+        {
+            get => _to;
+            set
+            {
+                _to = value;
+                UpdateTotalDays();
+            }
+        }
+
+        public int TotalDays { get; private set; }
         public LeaveRequestStatus Status { get; set; }
         public long? ApprovedBy { get; set; }
         public long UserId { get; set; }
 
         public virtual User? User { get; set; }
+
+        private DateTime _from;
+        private DateTime _to;
+
+        public void UpdateTotalDays()
+        {
+            TotalDays = (int)(To - From).TotalDays + 1;
+        }
     }
 }

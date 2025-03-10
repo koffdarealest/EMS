@@ -22,9 +22,9 @@ namespace EMS.Data.Entities
         public long? DepartmentId { get; set; }
 
         public virtual Department? Department { get; set; }
+        public virtual LeaveBalance? LeaveBalance { get; set; }
 
         public virtual ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
-        public virtual ICollection<LeaveBalance> LeaveBalances { get; set; } = new List<LeaveBalance>();
         public virtual ICollection<LeaveRequest> LeaveRequests { get; set; } = new List<LeaveRequest>();
         public virtual ICollection<Bonus> Bonuses { get; set; } = new List<Bonus>();
         public virtual ICollection<Salary> Salaries { get; set; } = new List<Salary>();

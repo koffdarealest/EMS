@@ -11,6 +11,7 @@ using EMS.Models.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace EMS.Controllers
 {
@@ -48,12 +49,26 @@ namespace EMS.Controllers
 
         public async Task<IActionResult> Detail(long? id)
         {
+            if (User.IsInRole("Employee"))
+            {
+                var userId = long.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                if (id != userId)
+                {
+                    return RedirectToAction("Detail", "User", new { id = userId });
+                }
+            }
+
             if (id == null)
             {
                 return NotFound();
             }
 
-            var user = await _userService.GetUserByIdAsync(id.Value, u => u.Department, u => u.Bonuses, u => u.Salaries);
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var user = await _userService.GetUserByIdAsync(id.Value, u => u.Department, u => u.Bonuses, u => u.Salaries, u => u.LeaveBalance);
             if (user != null)
             {
                 var currentSalary = user.Salaries
@@ -75,7 +90,8 @@ namespace EMS.Controllers
                     Role = user.Role,
                     Avatar = user.Avatar,
                     Bonuses = notDeletedBonuses,
-                    ActiveSalary = currentSalary
+                    ActiveSalary = currentSalary,
+                    LeaveBalance = user.LeaveBalance,
                 };
                 return View(userDetail);
             }
