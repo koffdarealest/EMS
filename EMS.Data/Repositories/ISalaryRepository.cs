@@ -15,5 +15,6 @@ namespace EMS.Data.Repositories
         Task<Salary> GetSalaryByIdAsync(long id, Expression<Func<Salary, object>>[] includes);
         Task<Salary> UpdateSalaryAsync(Salary salary);
         Task<Salary> DeleteSalaryAsync(long value, long? deletedBy);
+        Task<List<Salary>> GetSalariesByListUserId(List<long> selectedUsers);
     }
 }

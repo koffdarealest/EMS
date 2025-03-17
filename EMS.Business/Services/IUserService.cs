@@ -17,7 +17,8 @@ namespace EMS.Business.Services
         Task<PaginatedList<UserDto>> GetPaginatedUsersAsync(string searchTerm, int? departmentId, int? gender, DateOnly? joinDate, int pageIndex, int pageSize);
         Task<UserDto> UpdateUserAsync(UserDto userDto);
         Task<UserDto> DeleteUserByIdAsync(long? id, long? deletedBy);
-        Task<ICollection<UserDto>> GetEmployeesAsync();
+        Task<ICollection<UserDto>> GetEmployeesAsync(params Expression<Func<User, object>>[] includes);
         Task<UserDto> GetUserByIdAsync(long userId, params Expression<Func<User, object>>[] includes);
+        Task<PaginatedList<UserDto>> SearchUsersAsync(string searchTerm, long? departmentId, int? gender, DateTime? joinedAt, int pageIndex, int pageSize);
     }
 }

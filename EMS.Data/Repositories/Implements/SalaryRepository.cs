@@ -81,5 +81,13 @@ namespace EMS.Data.Repositories.Implements
             await _context.SaveChangesAsync();
             return salaryUpdated.Entity;
         }
+
+        public async Task<List<Salary>> GetSalariesByListUserId(List<long> selectedUsers)
+        {
+            return await _context.Salaries
+                //.Include(s => s.User)
+                .Where(s => selectedUsers.Contains(s.UserId) && s.IsDeleted == false)
+                .ToListAsync();
+        }
     }
 }

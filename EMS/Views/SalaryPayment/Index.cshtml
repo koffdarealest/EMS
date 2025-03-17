@@ -1,5 +1,71 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using Azure.Core
+@using EMS.Data.Enums
+@model List<EMS.Business.Dtos.SalaryPaymentDto>
+
 @{
+    ViewData["Title"] = "Salary Payments";
+    var monthFromQuery = ViewContext.HttpContext.Request.Query["time"].FirstOrDefault();
+    var currentMonth = !string.IsNullOrEmpty(monthFromQuery) ? monthFromQuery : DateTime.Now.ToString("yyyy-MM");
 }
+
+<div class="container mt-4">
+    <h2 class="mb-4">Salary Payments</h2>
+
+    <!-- Filter Section -->
+    <div class="row mb-4">
+        <div class="col-md-5 d-flex justify-content-between align-items-end">
+            <div class="flex-grow-1">
+                <label for="monthFilter" class="form-label">Filter by Month</label>
+                <input type="month" id="monthFilter" class="form-control" value="@currentMonth" onchange="reloadPage()">
+            </div>
+            <a asp-action="Create" class="btn btn-info px-3 shadow-sm ms-2">
+                Add Payment This Month
+            </a>
+        </div>
+    </div>
+
+
+    <!-- Salary Payments Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>User</th>
+                    <th>Total Salary</th>
+                    <th>Total Bonus</th>
+                    <th>Total Penalty</th>
+                    <th>Total Paid</th>
+                    <th>Paid At</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@(item.User != null ? item.User.Fullname : "N/A")</td>
+                        <td>@item.TotalSalary.ToString("C")</td>
+                        <td>@item.TotalBonus.ToString("C")</td>
+                        <td>@item.TotalPenalty.ToString("C")</td>
+                        <td>@item.TotalPaid.ToString("C")</td>
+                        <td>@(item.PaidAt.HasValue ? item.PaidAt.Value.ToString("yyyy-MM-dd") : "Not Paid Yet")</td>
+                        <td>
+                            <span class="badge @(item.Status == PaymentStatus.Paid ? "bg-success" : "bg-warning")">
+                                @item.Status
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function reloadPage() {
+        let selectedMonth = document.getElementById("monthFilter").value;
+        window.location.href = `?time=${selectedMonth}`;
+    }
+</script>

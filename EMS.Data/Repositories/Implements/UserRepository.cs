@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using EMS.Data.Contexts;
@@ -117,11 +118,16 @@ namespace EMS.Data.Repositories.Implements
             }
         }
 
-        public async Task<ICollection<User>> GetEmployeesAsync()
+        public async Task<ICollection<User>> GetEmployeesAsync(params Expression<Func<User, object>>[] includes)
         {
-            return await _context.Users
-                .Where(u => u.IsDeleted == false && u.Role != Role.Admin)
-                .ToListAsync();
+            IQueryable<User> queryable = _context.Users
+                .Where(u => u.IsDeleted == false && u.Role != Role.Admin);
+
+            foreach (var include in includes)
+            {
+                queryable = queryable.Include(include);
+            }
+            return await queryable.ToListAsync();
         }
 
         public async Task<User> GetUserByIdAsync(long userId, params Expression<Func<User, object>>[] includes)
@@ -135,6 +141,31 @@ namespace EMS.Data.Repositories.Implements
             }
 
             return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task<ICollection<User>> GetUsersByIds(List<long> selectedUsers)
+        {
+            return await _context.Users
+                .Include(u => u.Salaries)
+                .Include(u => u.Bonuses)
+                .Include(u => u.Attendances)
+                .Include(u => u.SalaryPayments)
+                .Where(u => selectedUsers.Contains(u.Id) && u.IsDeleted == false)
+                .ToListAsync();
+        }
+
+        public async Task<ICollection<User>> GetUsersAsync()
+        {
+            return await _context.Users
+                .Where(u => u.IsDeleted == false)
+                .ToListAsync();
+        }
+
+        public IQueryable<User> GetQueryableUsers()
+        {
+            return _context.Users
+                .Where(u => u.IsDeleted == false)
+                .AsNoTracking();
         }
     }
 }

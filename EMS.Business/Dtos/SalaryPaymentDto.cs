@@ -13,8 +13,9 @@ namespace EMS.Business.Dtos
     {
         public decimal TotalSalary { get; set; }
         public decimal TotalBonus { get; set; }
+        public decimal TotalPenalty { get; set; }
         public decimal TotalPaid { get; set; }
-        public DateTime PaidAt { get; set; }
+        public DateTime? PaidAt { get; set; }
         public PaymentStatus Status { get; set; }
         public long? UserId { get; set; }
         public UserDto? User { get; set; }

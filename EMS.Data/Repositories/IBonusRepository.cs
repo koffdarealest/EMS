@@ -12,6 +12,7 @@ namespace EMS.Data.Repositories
         Task<Bonus> CreateBonusAsync(Bonus bonus);
         Task<Bonus> DeleteBonusByIdAsync(long value, long? deletedBy);
         Task<Bonus> GetBonusByIdAsync(long id);
+        Task<List<Bonus>> GetBonusesByListUserId(List<long> selectedUsers);
         Task<Bonus> UpdateBonusAsync(Bonus bonus);
     }
 }

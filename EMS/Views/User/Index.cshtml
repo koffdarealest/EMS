@@ -130,3 +130,101 @@
             background-color: #f8f9fa; /* Màu xám nhẹ */
         }
 </style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let searchInput = document.querySelector("input[name='searchTerm']");
+        let departmentFilter = document.querySelector("select[name='departmentId']");
+        let genderFilter = document.querySelector("select[name='gender']");
+        let joinedAtFilter = document.querySelector("input[name='joinedAt']");
+        let tableBody = document.querySelector("tbody");
+        let pagination = document.querySelector(".pagination");
+
+        if (!searchInput || !departmentFilter || !genderFilter || !joinedAtFilter || !tableBody || !pagination) {
+            console.error("One or more elements are missing in the DOM.");
+            return;
+        }
+
+        function fetchUsers(page = 1) {
+            let searchTerm = searchInput.value.trim();
+            let departmentId = departmentFilter.value;
+            let gender = genderFilter.value;
+            let joinedAt = joinedAtFilter.value;
+
+            let url = `/User/Search?searchTerm=${encodeURIComponent(searchTerm)}&departmentId=${departmentId}&gender=${gender}&joinedAt=${joinedAt}&pageIndex=${page}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    tableBody.innerHTML = "";
+                    pagination.innerHTML = "";
+
+                    if (data.users.length > 0) {
+                        data.users.forEach(user => {
+                            let row = `
+                                <tr class="user-row" data-user-id="${user.id}">
+                                    <td>${user.id}</td>
+                                    <td><img src="${user.avatar ? user.avatar : "/images/default-avatar.png"}" class="rounded-circle" width="50" height="50" style="object-fit: cover;"></td>
+                                    <td>${user.fullname}</td>
+                                    <td>${user.gender}</td>
+                                    <td>${user.phone}</td>
+                                    <td>${user.departmentId ? user.departmentId : "N/A"}</td>
+                                    <td>${user.duty}</td>
+                                    <td>${user.joinedAt}</td>
+                                </tr>`;
+                            tableBody.innerHTML += row;
+                        });
+
+                        document.querySelectorAll(".user-row").forEach(row => {
+                            row.addEventListener("click", function () {
+                                let userId = this.getAttribute("data-user-id");
+                                window.location.href = `/User/Detail/${userId}`;
+                            });
+                        });
+
+                        updatePagination(data);
+                    } else {
+                        tableBody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">No users found.</td></tr>`;
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching users:", error);
+                    tableBody.innerHTML = `<tr><td colspan="8" class="text-center text-danger">Failed to load data.</td></tr>`;
+                });
+        }
+
+        function updatePagination(data) {
+            pagination.innerHTML = "";
+
+            if (data.pageIndex > 1) {
+                let prev = document.createElement("li");
+                prev.className = "page-item";
+                prev.innerHTML = `<a class="page-link" href="#">Previous</a>`;
+                prev.addEventListener("click", () => fetchUsers(data.pageIndex - 1));
+                pagination.appendChild(prev);
+            }
+
+            for (let i = 1; i <= data.totalPages; i++) {
+                let page = document.createElement("li");
+                page.className = `page-item ${data.pageIndex === i ? "active" : ""}`;
+                page.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                page.addEventListener("click", () => fetchUsers(i));
+                pagination.appendChild(page);
+            }
+
+            if (data.pageIndex < data.totalPages) {
+                let next = document.createElement("li");
+                next.className = "page-item";
+                next.innerHTML = `<a class="page-link" href="#">Next</a>`;
+                next.addEventListener("click", () => fetchUsers(data.pageIndex + 1));
+                pagination.appendChild(next);
+            }
+        }
+
+        [searchInput, departmentFilter, genderFilter, joinedAtFilter].forEach(element => {
+            element.addEventListener("input", () => fetchUsers());
+        });
+
+        fetchUsers();
+    });
+</script>

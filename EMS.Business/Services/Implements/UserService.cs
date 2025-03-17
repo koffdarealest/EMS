@@ -85,9 +85,9 @@ namespace EMS.Business.Services.Implements
             return _mapper.Map<UserDto>(await _userRepository.DeleteUserAsync(id.Value, deletedBy.Value));
         }
 
-        public async Task<ICollection<UserDto>> GetEmployeesAsync()
+        public async Task<ICollection<UserDto>> GetEmployeesAsync(params Expression<Func<User, object>>[] includes)
         {
-            var employees = await _userRepository.GetEmployeesAsync();
+            var employees = await _userRepository.GetEmployeesAsync(includes);
             return _mapper.Map<ICollection<UserDto>>(employees);
         }
 
@@ -95,6 +95,27 @@ namespace EMS.Business.Services.Implements
         {
             var user = await _userRepository.GetUserByIdAsync(userId, includes);
             return _mapper.Map<UserDto>(user);
+        }
+
+        public async Task<PaginatedList<UserDto>> SearchUsersAsync(string searchTerm, long? departmentId, int? gender, DateTime? joinedAt, int pageIndex,
+            int pageSize)
+        {
+            var queryable = _userRepository.GetQueryableUsers();
+            if (!string.IsNullOrEmpty(searchTerm))
+                queryable = queryable.Where(u => u.Fullname.Contains(searchTerm));
+
+            if (departmentId.HasValue)
+                queryable = queryable.Where(u => u.DepartmentId == departmentId);
+
+            if (gender.HasValue)
+                queryable = queryable.Where(u => (int)u.Gender == gender);
+
+            //if (joinedAt.HasValue)
+            //    queryable = queryable.Where(u => u.JoinedAt == DateOnly.FromDateTime(joinedAt.Value));
+
+            var users = await PaginatedList<User>.CreateAsync(queryable, pageIndex, pageSize);
+            var userDtos = _mapper.Map<List<UserDto>>(users);
+            return new PaginatedList<UserDto>(userDtos, users.TotalCount, pageIndex, pageSize);
         }
     }
 }

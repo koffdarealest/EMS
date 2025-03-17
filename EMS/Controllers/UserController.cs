@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.EntityFrameworkCore;
 
 namespace EMS.Controllers
 {
@@ -33,7 +34,8 @@ namespace EMS.Controllers
         public async Task<IActionResult> Index(string searchTerm, int? departmentId, int? gender, DateOnly? joinDate,
             int pageIndex = 1, int pageSize = 10)
         {
-            var employees = await GetEmployeesAsync(searchTerm, departmentId, gender, joinDate, pageIndex, pageSize);
+            //var employees = await GetEmployeesAsync(searchTerm, departmentId, gender, joinDate, pageIndex, pageSize);
+            PaginatedList<UserDto> employees = new PaginatedList<UserDto>(new List<UserDto>(), 0, pageIndex, pageSize);
             var departments = await GetDepartmentsAsync();
             ViewData["DepartmentNames"] = departments.ToDictionary(d => d.Id, d => d.Name);
             await LoadDepartmentsAsync();
@@ -134,6 +136,20 @@ namespace EMS.Controllers
             {
                 return NotFound();
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Search(string searchTerm, long? departmentId, int? gender, DateTime? joinedAt,
+            int pageIndex = 1, int pageSize = 10)
+        {
+            var listUsers = await _userService.SearchUsersAsync(searchTerm, departmentId, gender, joinedAt, pageIndex, pageSize);
+
+            return Json(new
+            {
+                users = listUsers,
+                pageIndex = listUsers.PageIndex,
+                totalPages = listUsers.TotalPages
+            });
         }
 
 

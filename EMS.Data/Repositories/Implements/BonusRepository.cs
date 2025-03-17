@@ -1,4 +1,4 @@
-﻿using System;
+﻿  using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -67,6 +67,14 @@ namespace EMS.Data.Repositories.Implements
             var bonusUpdated = _context.Bonuses.Update(bonus);
             await _context.SaveChangesAsync();
             return bonusUpdated.Entity;
+        }
+
+        public async Task<List<Bonus>> GetBonusesByListUserId(List<long> selectedUsers)
+        {
+            return await _context.Bonuses
+                //.Include(b => b.User)
+                .Where(b => selectedUsers.Contains(b.UserId) && b.IsDeleted == false)
+                .ToListAsync();
         }
     }
 }
