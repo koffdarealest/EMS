@@ -45,6 +45,7 @@ namespace EMS
             builder.Services.AddScoped<ILeaveRequestService, LeaveRequestService>();
             builder.Services.AddScoped<ILeaveBalanceRepository, LeaveBalanceRepository>();
             builder.Services.AddScoped<ILeaveBalanceService, LeaveBalanceService>();
+            builder.Services.AddScoped<IReportService, ReportService>();
 
             builder.Services.AddAutoMapper(typeof(MapperProfile));
 

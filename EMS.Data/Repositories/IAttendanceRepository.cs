@@ -17,5 +17,6 @@ namespace EMS.Data.Repositories
         Task<ICollection<Attendance>> GetAttendancesByDateAsync(DateTime selectedDate);
         Task<Attendance> GetByIdAsync(long value, Expression<Func<Attendance, object>>[] includes);
         Task<Attendance> UpdateAsync(Attendance attendance);
+        Task<ICollection<Attendance>> GetAllAsync();
     }
 }

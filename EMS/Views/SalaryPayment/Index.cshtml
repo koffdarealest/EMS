@@ -38,6 +38,7 @@
                     <th>Total Paid</th>
                     <th>Paid At</th>
                     <th>Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -52,9 +53,24 @@
                         <td>@item.TotalPaid.ToString("C")</td>
                         <td>@(item.PaidAt.HasValue ? item.PaidAt.Value.ToString("yyyy-MM-dd") : "Not Paid Yet")</td>
                         <td>
-                            <span class="badge @(item.Status == PaymentStatus.Paid ? "bg-success" : "bg-warning")">
+                            <span class="badge @(item.Status == PaymentStatus.Paid ? "bg-success" : 
+                                                   item.Status == PaymentStatus.Canceled ? "bg-danger" : "bg-warning")">
                                 @item.Status
                             </span>
+                        </td>
+                        <td>
+                            @if (item.Status != PaymentStatus.Paid && item.Status != PaymentStatus.Canceled)
+                            {
+                                <button class="btn btn-sm btn-success" onclick="updatePaymentStatus(@item.Id, 'Paid')">
+                                    Mark as Paid
+                                </button>
+                            }
+                            @if (item.Status != PaymentStatus.Canceled && item.Status != PaymentStatus.Paid)
+                            {
+                                <button class="btn btn-sm btn-danger" onclick="updatePaymentStatus(@item.Id, 'Canceled')">
+                                    Cancel Payment
+                                </button>
+                            }
                         </td>
                     </tr>
                 }
@@ -67,5 +83,26 @@
     function reloadPage() {
         let selectedMonth = document.getElementById("monthFilter").value;
         window.location.href = `?time=${selectedMonth}`;
+    }
+</script>
+
+<script>
+    function updatePaymentStatus(paymentId, newStatus) {
+        if (!confirm(`Are you sure you want to mark this payment as ${newStatus}?`)) {
+            return;
+        }
+
+        fetch(`/SalaryPayment/UpdateStatus?id=${paymentId}&status=${newStatus}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" }
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.reload(); // Refresh lại trang sau khi cập nhật thành công
+                } else {
+                    alert("Failed to update status.");
+                }
+            })
+            .catch(error => console.error("Error:", error));
     }
 </script>

@@ -11,5 +11,7 @@ namespace EMS.Data.Repositories
     {
         Task<List<SalaryPayment>> CreateAsync(List<SalaryPayment> salaryPayments);
         Task<List<SalaryPayment>> GetSalaryPaymentsByThisMonth(DateTime selectedTime);
+        Task<SalaryPayment> UpdateAsync(long id, string status);
+        Task<ICollection<SalaryPayment>> GetAllAsync();
     }
 }

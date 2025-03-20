@@ -102,5 +102,13 @@ namespace EMS.Data.Repositories.Implements
             await _context.SaveChangesAsync();
             return attendanceExist;
         }
+
+        public async Task<ICollection<Attendance>> GetAllAsync()
+        {
+            return await _context.Attendances
+                .Include(a => a.User)
+                .Where(a => a.IsDeleted == false)
+                .ToListAsync();
+        }
     }
 }

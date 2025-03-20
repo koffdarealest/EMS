@@ -111,5 +111,11 @@ namespace EMS.Business.Services.Implements
             var salaryPayments = await _salaryPaymentRepository.GetSalaryPaymentsByThisMonth(selectedTime);
             return _mapper.Map<List<SalaryPaymentDto>>(salaryPayments);
         }
+
+        public async Task<SalaryPaymentDto> UpdateStatusAsync(long id, string status)
+        {
+            var salaryPayment = await _salaryPaymentRepository.UpdateAsync(id, status);
+            return _mapper.Map<SalaryPaymentDto>(salaryPayment);
+        }
     }
 }

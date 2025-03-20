@@ -11,5 +11,6 @@ namespace EMS.Business.Services
     {
         Task<List<SalaryPaymentDto>> CreatePaymentsByListUserIdAsync(List<long> selectedUsers);
         Task<List<SalaryPaymentDto>> GetSalaryPaymentsByThisMonthAsync(DateTime selectedTime);
+        Task<SalaryPaymentDto> UpdateStatusAsync(long id, string status);
     }
 }

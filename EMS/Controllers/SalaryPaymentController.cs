@@ -28,7 +28,7 @@ namespace EMS.Controllers
                 selectedTime = DateTime.Now;
             }
 
-            var salaryPayments =  await _salaryPaymentService.GetSalaryPaymentsByThisMonthAsync(selectedTime);
+            var salaryPayments = await _salaryPaymentService.GetSalaryPaymentsByThisMonthAsync(selectedTime);
             return View(salaryPayments);
         }
 
@@ -41,7 +41,7 @@ namespace EMS.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> CreatePayment(List<long> selectedUsers) 
+        public async Task<IActionResult> CreatePayment(List<long> selectedUsers)
         {
             if (selectedUsers == null || selectedUsers.Count == 0)
             {
@@ -50,6 +50,21 @@ namespace EMS.Controllers
 
             await _salaryPaymentService.CreatePaymentsByListUserIdAsync(selectedUsers);
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateStatus(long id, string status)
+        {
+            if (status == "Paid" || status == "Canceled")
+            {
+                await _salaryPaymentService.UpdateStatusAsync(id, status);
+                return Ok();
+            }
+            else
+            {
+                return BadRequest("Invalid status");
+            }
         }
     }
 }

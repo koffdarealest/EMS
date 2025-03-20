@@ -1,0 +1,123 @@
+﻿@{
+    ViewData["Title"] = "Báo cáo";
+}
+
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-lg" style="width: 550px;">
+        <div class="card-header bg-primary text-white text-center">
+            <h3 class="mb-0">Export Reports</h3>
+        </div>
+        <div class="card-body">
+            <form id="reportForm" method="get" action="/Report/Generate">
+                <div class="form-group">
+                    <label for="reportType" class="font-weight-bold">Choose report type:</label>
+                    <select id="reportType" name="reportType" class="form-control" onchange="toggleDateSelection()">
+                        <option value="employee">📊 Employee report</option>
+                        <option value="salary">💰 Salary report</option>
+                        <option value="attendance">🕒 Attendance report</option>
+                    </select>
+                </div>
+
+                <div id="dateSelection" class="form-group mt-3" style="display: none;">
+                    <div id="yearSelection" class="form-group">
+                        <label for="year" class="font-weight-bold">Year:</label>
+                        <select id="year" name="year" class="form-control">
+                            @{
+                                int currentYear = DateTime.Now.Year;
+                                for (int i = currentYear; i >= currentYear - 5; i--)
+                                {
+                                    <option value="@i">@i</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div id="timePeriodSelection" class="form-group mt-3">
+                        <label for="timePeriod" class="font-weight-bold">Time:</label>
+                        <select id="timePeriod" name="timePeriod" class="form-control" onchange="toggleMonthOrQuarter()">
+                            <option value="monthly">📅 By month</option>
+                            <option value="quarterly">📆 By quarter</option>
+                        </select>
+                    </div>
+
+                    <div id="monthSelection" class="form-group mt-3" style="display: none;">
+                        <label for="month" class="font-weight-bold">Month:</label>
+                        <select id="month" name="month" class="form-control">
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+
+                    <div id="quarterSelection" class="form-group mt-3" style="display: none;">
+                        <label for="quarter" class="font-weight-bold">Quarter:</label>
+                        <select id="quarter" name="quarter" class="form-control">
+                            <option value="1">Quarter 1 (January - March)</option>
+                            <option value="2">Quarter 2 (April - June)</option>
+                            <option value="3">Quarter 3 (July - September)</option>
+                            <option value="4">Quarter 4 (October - December)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        📥 Export
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleDateSelection() {
+        let reportType = document.getElementById("reportType").value;
+        let dateSelection = document.getElementById("dateSelection");
+        let timePeriodSelection = document.getElementById("timePeriodSelection");
+        let monthSelection = document.getElementById("monthSelection");
+        let quarterSelection = document.getElementById("quarterSelection");
+
+        if (reportType === "salary") {
+            dateSelection.style.display = "block";
+            timePeriodSelection.style.display = "block";
+        }
+        else if (reportType === "attendance") {
+            dateSelection.style.display = "block";
+            timePeriodSelection.style.display = "none";
+            monthSelection.style.display = "block";
+            quarterSelection.style.display = "none";
+        }
+        else {
+            dateSelection.style.display = "none";
+        }
+
+        toggleMonthOrQuarter();
+    }
+
+    function toggleMonthOrQuarter() {
+        let timePeriod = document.getElementById("timePeriod")?.value;
+        let monthSelection = document.getElementById("monthSelection");
+        let quarterSelection = document.getElementById("quarterSelection");
+
+        if (!timePeriod || timePeriod === "monthly") {
+            monthSelection.style.display = "block";
+            quarterSelection.style.display = "none";
+        } else {
+            monthSelection.style.display = "none";
+            quarterSelection.style.display = "block";
+        }
+    }
+
+    document.getElementById("reportType").addEventListener("change", toggleDateSelection);
+    document.getElementById("timePeriod")?.addEventListener("change", toggleMonthOrQuarter);
+</script>
