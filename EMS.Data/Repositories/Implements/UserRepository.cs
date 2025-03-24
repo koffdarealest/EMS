@@ -167,5 +167,21 @@ namespace EMS.Data.Repositories.Implements
                 .Where(u => u.IsDeleted == false)
                 .AsNoTracking();
         }
+
+        public async Task<List<long>> GetUserIdsAsync()
+        {
+            return await _context.Users
+                .Where(u => u.IsDeleted == false && u.Role != Role.Admin)
+                .Select(u => u.Id)
+                .ToListAsync();
+        }
+
+        public async Task<List<long>> GetUserIdsByDepartmentIdAsync(long departmentId)
+        {
+            return await _context.Users
+                .Where(u => u.DepartmentId == departmentId && u.IsDeleted == false && u.Role != Role.Admin)
+                .Select(u => u.Id)
+                .ToListAsync();
+        }
     }
 }

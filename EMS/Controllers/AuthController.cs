@@ -51,7 +51,8 @@ namespace EMS.Controllers
                         {
                             new Claim(ClaimTypes.Name, result.Fullname),
                             new Claim(ClaimTypes.NameIdentifier, result.Id.ToString()),
-                            new Claim(ClaimTypes.Role, result.Role.ToString())
+                            new Claim(ClaimTypes.Role, result.Role.ToString()),
+                            new Claim("DepartmentId", result.DepartmentId.ToString())
                         };
 
                         var claimsIdentity =

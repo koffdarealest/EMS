@@ -67,6 +67,13 @@ namespace EMS.Data.Contexts
                 entity.HasKey(ua => ua.UserId);
             });
 
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.User)
+                .WithMany()
+                .HasForeignKey(n => n.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
             OnModelCreatingPartial(modelBuilder);
         }   
 

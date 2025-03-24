@@ -6,6 +6,7 @@ using EMS.Business.Services.Implements;
 using EMS.Data.Contexts;
 using EMS.Data.Repositories;
 using EMS.Data.Repositories.Implements;
+using EMS.Hubs;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
@@ -46,6 +47,12 @@ namespace EMS
             builder.Services.AddScoped<ILeaveBalanceRepository, LeaveBalanceRepository>();
             builder.Services.AddScoped<ILeaveBalanceService, LeaveBalanceService>();
             builder.Services.AddScoped<IReportService, ReportService>();
+            builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+            builder.Services.AddScoped<INotificationService, NotificationService>();
+            builder.Services.AddScoped<INotificationRecipientRepository, NotificationRecipientRepository>();
+            builder.Services.AddScoped<INotificationRecipientService, NotificationRecipientService>();
+            builder.Services.AddScoped<IActivityLogRepository, ActivityLogRepository>();
+            builder.Services.AddScoped<IActivityLogService, ActivityLogService>();
 
             builder.Services.AddAutoMapper(typeof(MapperProfile));
 
@@ -98,6 +105,8 @@ namespace EMS
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            app.MapHub<NotificationHub>("/notificationHub");
 
             //app.UseRateLimiter();
 

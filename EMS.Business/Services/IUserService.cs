@@ -20,5 +20,7 @@ namespace EMS.Business.Services
         Task<ICollection<UserDto>> GetEmployeesAsync(params Expression<Func<User, object>>[] includes);
         Task<UserDto> GetUserByIdAsync(long userId, params Expression<Func<User, object>>[] includes);
         Task<PaginatedList<UserDto>> SearchUsersAsync(string searchTerm, long? departmentId, int? gender, DateTime? joinedAt, int pageIndex, int pageSize);
+        Task<List<long>> GetUserIdsAsync();
+        Task<List<long>> GetUserIdsByDepartmentIdAsync(long departmentId);
     }
 }

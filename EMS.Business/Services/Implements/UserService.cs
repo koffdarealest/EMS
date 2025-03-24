@@ -59,7 +59,7 @@ namespace EMS.Business.Services.Implements
             };
             await _leaveBalanceRepository.CreateAsync(_mapper.Map<LeaveBalance>(leaveBalanceDto));
             await _userAuthService.CreateUserAuthAsync(createdUser.Id, username, password);
-            return userDto;
+            return _mapper.Map<UserDto>(createdUser);
         }
 
         public async Task<PaginatedList<UserDto>> GetPaginatedUsersAsync(string searchTerm, int? departmentId, int? gender, DateOnly? joinDate, int pageIndex, int pageSize)
@@ -116,6 +116,16 @@ namespace EMS.Business.Services.Implements
             var users = await PaginatedList<User>.CreateAsync(queryable, pageIndex, pageSize);
             var userDtos = _mapper.Map<List<UserDto>>(users);
             return new PaginatedList<UserDto>(userDtos, users.TotalCount, pageIndex, pageSize);
+        }
+
+        public async Task<List<long>> GetUserIdsAsync()
+        {
+            return await _userRepository.GetUserIdsAsync();
+        }
+
+        public async Task<List<long>> GetUserIdsByDepartmentIdAsync(long departmentId)
+        {
+            return await _userRepository.GetUserIdsByDepartmentIdAsync(departmentId);
         }
     }
 }

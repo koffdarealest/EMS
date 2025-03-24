@@ -9,99 +9,214 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/EMS.styles.css" asp-append-version="true" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">EMS</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        @if (!User.Identity.IsAuthenticated)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Login">Login</a>
-                            </li>
-                        }
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">Employees</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Department" asp-action="Index">Departments</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Salary" asp-action="Index">Salaries</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Attendance" asp-action="Index">Attendances</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Leave" asp-action="Index">Leaves</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="SalaryPayment" asp-action="Index">Payments</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Report" asp-action="Index">Reports</a>
-                            </li>
-                        }
-                        @if (User.IsInRole("Employee"))
-                        {
-                            var userId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Detail" asp-route-id="@userId">Your Information</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Leave" asp-action="CreateRequest">Create Leave Request</a>
-                            </li>
-                        }
-                    </ul>
-                    @if (User.Identity.IsAuthenticated)
+<header>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <div class="container-fluid">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">EMS</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <ul class="navbar-nav flex-grow-1">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                    </li>
+                    @if (!User.Identity.IsAuthenticated)
                     {
-                        <ul class="navbar-nav ms-auto ">
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Attendance" asp-action="CheckIn">Check In</a>
-                            </li>
-                        </ul>
-                        <span class="navbar-text">
-                            Hello, @User.Identity.Name
-                        </span>
-                        <ul class="navbar-nav ms-auto">
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Logout">Logout</a>
-                            </li>
-                        </ul>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Login">Login</a>
+                        </li>
                     }
-                </div>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">Employees</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Department" asp-action="Index">Departments</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Salary" asp-action="Index">Salaries</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Attendance" asp-action="Index">Attendances</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Leave" asp-action="Index">Leaves</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="SalaryPayment" asp-action="Index">Payments</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Report" asp-action="Index">Reports</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="ActivityLog" asp-action="Index">Your Activity Logs</a>
+                        </li>
+                    }
+                    @if (User.IsInRole("Employee"))
+                    {
+                        var userId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Detail" asp-route-id="@userId">Your Information</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Leave" asp-action="CreateRequest">Create Leave Request</a>
+                        </li>
+                    }
+                </ul>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <ul class="navbar-nav ms-auto ">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Notification" asp-action="Index">Send a notification</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav ms-auto ">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Attendance" asp-action="CheckIn">Check In</a>
+                        </li>
+                    </ul>
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown">
+                            🔔 <span id="notificationCount" class="badge bg-danger" style="display: none;">0</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end" id="notificationList">
+                            <span class="dropdown-item">No notification</span>
+                        </div>
+                    </div>
+                    <span class="navbar-text">
+                        Hello, @User.Identity.Name
+                    </span>
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Auth" asp-action="Logout">Logout</a>
+                        </li>
+                    </ul>
+                }
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - EMS - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+    </nav>
+</header>
+<div class="container">
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+</div>
+
+<footer class="border-top footer text-muted">
+    <div class="container">
+        &copy; 2025 - EMS - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    </div>
+</footer>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+<style>
+    #notificationList {
+        max-height: 650px; /* Giới hạn chiều cao */
+        overflow-y: auto; /* Bật cuộn dọc */
+        width: 550px; /* Đảm bảo chiều rộng phù hợp */
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/notificationHub")
+            .build();
+
+        var departmentId = "@User.FindFirstValue("DepartmentId")";
+        connection.start()
+            .then(() => connection.invoke("JoinGroup", departmentId))
+            .catch(err => console.error("Connection error:", err.toString()));
+
+
+        connection.on("ReceiveMessage", function (sender, title, message, createdAt) {
+            addNotification(sender, title, message, createdAt, true);
+        });
+
+        function addNotification(sender, title, message, createdAt, isNew) {
+            var notificationList = $("#notificationList");
+            var notificationCount = $("#notificationCount");
+      
+            if (notificationList.find(".dropdown-item").length === 1 && notificationList.find(".dropdown-item").text() === "No notification") {
+                notificationList.empty();
+            }
+
+            var formattedTime = formatDateTime(createdAt);
+
+            var newNotification = `
+        <div class="dropdown-item">
+            <strong>${sender}</strong>: ${title} - ${message} <br>
+            <small class="text-muted">${formattedTime}</small>
+        </div>
+        `;
+
+            if (isNew) {
+                notificationList.prepend(newNotification);
+            } else {
+                notificationList.append(newNotification);
+            }
+
+            // Nếu là thông báo mới, tăng số đếm
+            if (isNew) {
+                var currentCount = parseInt(notificationCount.text()) || 0;
+                notificationCount.text(currentCount + 1).show();
+            }
+        }
+
+        function formatDateTime(isoString) {
+            var date = new Date(isoString);
+            var hours = date.getHours().toString().padStart(2, '0');
+            var minutes = date.getMinutes().toString().padStart(2, '0');
+            var day = date.getDate().toString().padStart(2, '0');
+            var month = (date.getMonth() + 1).toString().padStart(2, '0'); 
+            var year = date.getFullYear();
+            return `${hours}:${minutes} ${day}/${month}/${year}`;
+        }
+
+        $.get("/Notification/GetNotifications", function (data) {
+            var notificationList = $("#notificationList");
+            notificationList.empty();
+
+            if (!data || !Array.isArray(data) || data.length === 0) {
+                notificationList.append('<li><span class="dropdown-item">No notification</span></li>');
+            } else {
+                data.forEach(noti => {
+                    if (noti.notification) {
+                        addNotification(noti.notification.senderName, noti.notification.title, noti.notification.message, noti.createdAt, false);
+                    }
+                });
+            }
+        }).fail(function (err) {
+            console.error("Lỗi khi lấy danh sách thông báo:", err);
+        });
+
+        // Lấy số thông báo chưa đọc
+        $.get("/Notification/GetUnreadNotificationsCount", function (data) {
+            if (data.count > 0) {
+                $("#notificationCount").text(data.count).show();
+            } else {
+                $("#notificationCount").hide();
+            }
+        });
+
+        // Khi nhấn vào dropdown, đánh dấu tất cả là đã đọc
+        $("#notificationDropdown").on("click", function () {
+            $.post("/Notification/MarkAllAsRead", function () {
+                $("#notificationCount").text(0).hide();
+            });
+        });
+    });
+</script>

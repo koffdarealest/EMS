@@ -30,6 +30,12 @@ namespace EMS.Business.Profiles
             CreateMap<LeaveRequest, LeaveRequestDto>();
             CreateMap<LeaveRequestDto, LeaveRequest>()
                 .AfterMap((src, dest) => dest.UpdateTotalDays());
+            CreateMap<Notification, NotificationDto>();
+            CreateMap<NotificationDto, Notification>();
+            CreateMap<NotificationRecipient, NotificationRecipientDto>();
+            CreateMap<NotificationRecipientDto, NotificationRecipient>();
+            CreateMap<ActivityLog, ActivityLogDto>();
+            CreateMap<ActivityLogDto, ActivityLog>();
         }
     }
 }

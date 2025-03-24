@@ -21,13 +21,14 @@ namespace EMS.Controllers
         private readonly IUserService _userService;
         private readonly IDepartmentService _departmentService;
         private readonly IAzureBlobAvatarService _azureBlobAvatarService;
+        private readonly IActivityLogService _activityLogService;
 
-
-        public UserController(IUserService userService, IDepartmentService departmentService, IAzureBlobAvatarService azureBlobAvatarService)
+        public UserController(IUserService userService, IDepartmentService departmentService, IAzureBlobAvatarService azureBlobAvatarService, IActivityLogService activityLogService)
         {
             _userService = userService;
             _departmentService = departmentService;
             _azureBlobAvatarService = azureBlobAvatarService;
+            _activityLogService = activityLogService;
         }
 
         [Authorize(Roles = "Admin")]
@@ -187,7 +188,14 @@ namespace EMS.Controllers
 
             try
             {
-                await _userService.CreateUserAsync(userDto, user.Username, user.Password);
+                var createdUserDto = await _userService.CreateUserAsync(userDto, user.Username, user.Password);
+                var userId = long.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                var activityLogDto = new ActivityLogDto
+                {
+                    UserId = userId,
+                    Detail = $"Create user {createdUserDto.Id}"
+                };
+                await _activityLogService.CreateActivityLogAsync(activityLogDto);
                 return RedirectToAction(nameof(Index));
             }
             catch (UsernameAlreadyExistException e)
@@ -241,7 +249,14 @@ namespace EMS.Controllers
 
             try
             {
-                await _userService.UpdateUserAsync(userDto);
+                var editedUserDto = await _userService.UpdateUserAsync(userDto);
+                var userId = long.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                var activityLogDto = new ActivityLogDto
+                {
+                    UserId = userId,
+                    Detail = $"Edit user {editedUserDto.Id}"
+                };
+                await _activityLogService.CreateActivityLogAsync(activityLogDto);
                 return RedirectToAction("Detail", new { id = id });
             }
             catch (Exception e)
@@ -265,6 +280,12 @@ namespace EMS.Controllers
             try
             {
                 var user = await _userService.DeleteUserByIdAsync(id, userId);
+                var activityLogDto = new ActivityLogDto
+                {
+                    UserId = userId,
+                    Detail = $"Delete user {user.Id}"
+                };
+                await _activityLogService.CreateActivityLogAsync(activityLogDto);
             }
             catch (ArgumentNullException ex) 
             {

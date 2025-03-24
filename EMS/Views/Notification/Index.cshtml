@@ -1,0 +1,61 @@
+﻿@using System.Security.Claims
+@using EMS.Business.Dtos
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.AspNetCore.OutputCaching
+@{
+    ViewData["Title"] = "Gửi thông báo";
+    var departments = ViewBag.Departments as List<DepartmentDto>;
+}
+@model EMS.Models.Notifications.CreateNotificationViewModel;
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Form tạo thông báo -->
+        <div class="col-md-6">
+            <div class="card shadow-lg p-4">
+                <h3 class="text-primary mb-3"><i class="bi bi-bell"></i> Send Notification</h3>
+                <form method="post" asp-controller="Notification" asp-action="Send">
+                    <div class="mb-3">
+                        <label for="title" class="form-label fw-bold">Title</label>
+                        <input class="form-control" id="title" asp-for="Title" placeholder="Enter notification title..."/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label fw-bold">Message</label>
+                        <textarea id="message" class="form-control" asp-for="Message" placeholder="Enter notification message..."></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="target" class="form-label fw-bold">Send to</label>
+                        <select id="target" class="form-select" asp-for="DepartmentId">
+                            <option value="all">📢 All employees</option>
+                            @if (departments != null)
+                            {
+                                foreach (var dept in departments)
+                                {
+                                    <option value="@dept.Id">🏢 @dept.Name</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <button type="submit" id="sendNotification" class="btn btn-primary w-100">
+                        <i class="bi bi-send"></i> Send
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Danh sách thông báo -->
+        <div class="col-md-6">
+            <div class="card shadow-lg p-4">
+                <h4 class="text-success mb-3"><i class="bi bi-chat-left-text"></i> Recently notification</h4>
+                <ul id="notificationList" class="list-group">
+                    <li class="list-group-item text-muted">No notification...</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">

@@ -21,5 +21,7 @@ namespace EMS.Data.Repositories
         Task<User> DeleteUserAsync(long userId, long deletedBy);
         Task<ICollection<User>> GetEmployeesAsync(params Expression<Func<User, object>>[] includes);
         Task<ICollection<User>> GetUsersByIds(List<long> selectedUsers);
+        Task<List<long>> GetUserIdsAsync();
+        Task<List<long>> GetUserIdsByDepartmentIdAsync(long departmentId);
     }
 }
