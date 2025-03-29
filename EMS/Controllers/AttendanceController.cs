@@ -7,6 +7,7 @@ using EMS.Models.Attendance;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.OutputCaching;
 using EMS.Business.Dtos;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace EMS.Controllers
 {
@@ -98,7 +99,18 @@ namespace EMS.Controllers
             return View(checkInViewModel);
         }
 
+        public async Task<IActionResult> UserDetail(long? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var attendances = await _attendanceService.GetAttendancesByUserIdThisMonthAsync(id.Value);
+            return View(attendances);
+        }
+
         [HttpPost]
+        [EnableRateLimiting("AttendanceConcurrency")]
         public async Task<IActionResult> SubmitCheck([FromBody] CheckInRequestModel model)
         {
             if (model == null || string.IsNullOrEmpty(model.ImageData))

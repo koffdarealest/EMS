@@ -55,10 +55,11 @@
                     <!-- Buttons -->
                     @if (User.IsInRole("Admin"))
                     {
-                        <div class="text-center mt-4">
-                            <a href="/User/Edit/@Model.Id" class="btn btn-warning px-4 me-2 shadow-sm">Edit</a>
-                            <button type="button" class="btn btn-danger px-4 me-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-user-id="@Model.Id">
-                                Delete
+                        <div class="d-flex justify-content-center flex-wrap gap-2 my-3">
+                            <a href="/User/Edit/@Model.Id" class="btn btn-warning px-4 py-2 shadow-sm fw-bold">✏️ Edit</a>
+                            <button type="button" class="btn btn-danger px-4 py-2 shadow-sm fw-bold" 
+                                    data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-user-id="@Model.Id">
+                                🗑️ Delete
                             </button>
                             <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
@@ -81,12 +82,16 @@
                                 </div>
                             </div>
                             <a asp-controller="Salary" asp-action="Create" asp-route-userId="@Model.Id"
-                               class="btn btn-success px-4 me-2 shadow-sm">
-                                Add Salary
+                               class="btn btn-success px-4 py-2 shadow-sm fw-bold">
+                                💰 Add Salary
                             </a>
                             <a asp-controller="Bonus" asp-action="Create" asp-route-userId="@Model.Id"
-                               class="btn btn-info px-4 me-2 shadow-sm">
-                                Add Bonus/Penalty
+                               class="btn btn-primary px-4 py-2 shadow-sm fw-bold">
+                                🎁 Add Bonus/Penalty
+                            </a>
+                            <a asp-controller="Attendance" asp-action="UserDetail" asp-route-id="@Model.Id"
+                               class="btn btn-info px-4 py-2 shadow-sm fw-bold">
+                                📅 Attendance this month
                             </a>
                         </div>
                     }

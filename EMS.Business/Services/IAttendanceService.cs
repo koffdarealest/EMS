@@ -18,5 +18,6 @@ namespace EMS.Business.Services
         Task<ICollection<AttendanceDto>> GetAttendancesByDateAsync(DateTime selectedDate);
         Task<AttendanceDto> GetAttendanceByIdAsync(long value, params Expression<Func<Attendance, object>>[] includes);
         Task<AttendanceDto> UpdateAttendanceAsync(AttendanceDto attendanceDto);
+        Task<ICollection<AttendanceDto>> GetAttendancesByUserIdThisMonthAsync(long value);
     }
 }

@@ -22,5 +22,6 @@ namespace EMS.Business.Services
         Task<PaginatedList<UserDto>> SearchUsersAsync(string searchTerm, long? departmentId, int? gender, DateTime? joinedAt, int pageIndex, int pageSize);
         Task<List<long>> GetUserIdsAsync();
         Task<List<long>> GetUserIdsByDepartmentIdAsync(long departmentId);
+        Task<List<UserDto>> GetAllUserForBackup();
     }
 }

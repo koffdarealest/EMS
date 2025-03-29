@@ -11,6 +11,7 @@
 <div class="container mt-4">
     <h2 class="text-primary text-center mb-4">Employees</h2>
     <a href="@Url.Action("Create")" class="btn btn-primary mb-4">Create New User</a>
+    <a href="@Url.Action("BackupUser")" class="btn btn-warning mb-4">Back Up User</a>
     <form method="get" class="row g-3 mb-4">
         <div class="col-md-4">
             <input type="text" class="form-control" name="searchTerm" placeholder="Search by name..." value="@ViewData["SearchTerm"]">
@@ -132,6 +133,14 @@
 </style>
 
 <script>
+    function debounce(func, delay) {
+        let timer;
+        return function (...args) {
+            clearTimeout(timer);
+            timer = setTimeout(() => func.apply(this, args), delay);
+        };
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
         let searchInput = document.querySelector("input[name='searchTerm']");
         let departmentFilter = document.querySelector("select[name='departmentId']");
@@ -139,6 +148,7 @@
         let joinedAtFilter = document.querySelector("input[name='joinedAt']");
         let tableBody = document.querySelector("tbody");
         let pagination = document.querySelector(".pagination");
+        var departmentNames = @Html.Raw(Json.Serialize(ViewData["DepartmentNames"] ?? new Dictionary<long, string>()));
 
         if (!searchInput || !departmentFilter || !genderFilter || !joinedAtFilter || !tableBody || !pagination) {
             console.error("One or more elements are missing in the DOM.");
@@ -161,14 +171,17 @@
 
                     if (data.users.length > 0) {
                         data.users.forEach(user => {
+                            let genderText = user.gender === 1 ? "Male" : user.gender === 2 ? "Female" : "N/A";
+                            let departmentName = user.departmentId && departmentNames[user.departmentId] ? departmentNames[user.departmentId] : "N/A";
+
                             let row = `
                                 <tr class="user-row" data-user-id="${user.id}">
                                     <td>${user.id}</td>
                                     <td><img src="${user.avatar ? user.avatar : "/images/default-avatar.png"}" class="rounded-circle" width="50" height="50" style="object-fit: cover;"></td>
                                     <td>${user.fullname}</td>
-                                    <td>${user.gender}</td>
+                                    <td>${genderText}</td>
                                     <td>${user.phone}</td>
-                                    <td>${user.departmentId ? user.departmentId : "N/A"}</td>
+                                    <td>${departmentName}</td>
                                     <td>${user.duty}</td>
                                     <td>${user.joinedAt}</td>
                                 </tr>`;
@@ -221,10 +234,14 @@
             }
         }
 
+        let debouncedFetchUsers = debounce(fetchUsers, 500);
+
         [searchInput, departmentFilter, genderFilter, joinedAtFilter].forEach(element => {
-            element.addEventListener("input", () => fetchUsers());
+            element.addEventListener("input", () => debouncedFetchUsers());
         });
 
         fetchUsers();
     });
+
+
 </script>

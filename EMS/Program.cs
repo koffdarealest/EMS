@@ -1,6 +1,7 @@
 using System.Threading.RateLimiting;
 using EMS.Business.Clouds;
 using EMS.Business.Profiles;
+using EMS.Business.Redis;
 using EMS.Business.Services;
 using EMS.Business.Services.Implements;
 using EMS.Data.Contexts;
@@ -9,6 +10,7 @@ using EMS.Data.Repositories.Implements;
 using EMS.Hubs;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 
 namespace EMS
 {
@@ -22,8 +24,10 @@ namespace EMS
             builder.Services.AddControllersWithViews();
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
             builder.Services.AddDbContext<SqlServerContext>(options => 
                 options.UseSqlServer(connectionString));
+            builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnectionString));
 
             //DI 
             builder.Services.AddScoped<IUserAuthRepository, UserAuthRepository>();
@@ -53,6 +57,7 @@ namespace EMS
             builder.Services.AddScoped<INotificationRecipientService, NotificationRecipientService>();
             builder.Services.AddScoped<IActivityLogRepository, ActivityLogRepository>();
             builder.Services.AddScoped<IActivityLogService, ActivityLogService>();
+            builder.Services.AddScoped<IRedisService, RedisService>();
 
             builder.Services.AddAutoMapper(typeof(MapperProfile));
 
@@ -63,17 +68,35 @@ namespace EMS
             builder.Services.AddSingleton<AzureBlobAvatarService>();
             builder.Services.AddSingleton<AzureBlobCheckService>();
 
-            //builder.Services.AddRateLimiter(options =>
-            //{
-            //    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
-            //        RateLimitPartition.GetFixedWindowLimiter(
-            //            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-            //            key => new FixedWindowRateLimiterOptions
-            //            {
-            //                PermitLimit = 2,
-            //                Window = TimeSpan.FromMinutes(1)
-            //            }));
-            //});
+            builder.Services.AddRateLimiter(options =>
+            {
+                options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+                    RateLimitPartition.GetTokenBucketLimiter(
+                        partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
+                        factory: partition => new TokenBucketRateLimiterOptions
+                        {
+                            TokenLimit = 50,        //Concurrent request
+                            TokensPerPeriod = 5,    //charge number
+                            ReplenishmentPeriod = TimeSpan.FromSeconds(10), //time to charge
+                            AutoReplenishment = true,
+                            QueueLimit = 5 //queue 
+                        }));
+                options.AddPolicy("AttendanceConcurrency", httpContext =>
+                {
+                    if (httpContext.Request.Path.StartsWithSegments("/Attendance/SubmitCheck"))
+                    {
+                        return RateLimitPartition.GetConcurrencyLimiter(
+                            partitionKey: "global-attendance",
+                            factory: _ => new ConcurrencyLimiterOptions
+                            {
+                                PermitLimit = 20,
+                                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                                QueueLimit = 10
+                            });
+                    }
+                    return RateLimitPartition.GetNoLimiter<string>("default");
+                });
+            });
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
@@ -108,7 +131,7 @@ namespace EMS
 
             app.MapHub<NotificationHub>("/notificationHub");
 
-            //app.UseRateLimiter();
+            app.UseRateLimiter();
 
             //app.MapGet("/", () => Results.Ok($"Hello world")).RequireRateLimiting("fixed");
 

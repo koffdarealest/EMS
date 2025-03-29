@@ -110,5 +110,18 @@ namespace EMS.Data.Repositories.Implements
                 .Where(a => a.IsDeleted == false)
                 .ToListAsync();
         }
+
+        public async Task<ICollection<Attendance>> GetAttendancesByUserIdThisMonthAsync(long userId)
+        {
+            return await _context.Attendances
+                .Include(a => a.User)
+                .Where(a =>
+                    a.UserId == userId &&
+                    a.CheckIn.HasValue &&
+                    a.CheckIn.Value.Month == DateTime.Today.Month &&
+                    a.CheckIn.Value.Year == DateTime.Today.Year &&
+                    a.IsDeleted == false)
+                .ToListAsync();
+        }
     }
 }

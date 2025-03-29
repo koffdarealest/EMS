@@ -18,5 +18,6 @@ namespace EMS.Data.Repositories
         Task<Attendance> GetByIdAsync(long value, Expression<Func<Attendance, object>>[] includes);
         Task<Attendance> UpdateAsync(Attendance attendance);
         Task<ICollection<Attendance>> GetAllAsync();
+        Task<ICollection<Attendance>> GetAttendancesByUserIdThisMonthAsync(long value);
     }
 }

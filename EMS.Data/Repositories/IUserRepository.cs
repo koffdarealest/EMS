@@ -23,5 +23,6 @@ namespace EMS.Data.Repositories
         Task<ICollection<User>> GetUsersByIds(List<long> selectedUsers);
         Task<List<long>> GetUserIdsAsync();
         Task<List<long>> GetUserIdsByDepartmentIdAsync(long departmentId);
+        Task<List<User>> GetAllForBackup();
     }
 }

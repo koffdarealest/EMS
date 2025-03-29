@@ -80,5 +80,10 @@ namespace EMS.Business.Services.Implements
             }
             return _mapper.Map<AttendanceDto>(await _attendanceRepository.UpdateAsync(_mapper.Map<Attendance>(attendanceDto)));
         }
+
+        public async Task<ICollection<AttendanceDto>> GetAttendancesByUserIdThisMonthAsync(long value)
+        {
+            return _mapper.Map<ICollection<AttendanceDto>>(await _attendanceRepository.GetAttendancesByUserIdThisMonthAsync(value));
+        }
     }
 }

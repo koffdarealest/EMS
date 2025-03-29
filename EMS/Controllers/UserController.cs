@@ -1,8 +1,13 @@
 ﻿using System.Runtime.InteropServices.JavaScript;
 using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using EMS.Business.Clouds;
 using EMS.Business.Dtos;
 using EMS.Business.Exceptions;
+using EMS.Business.Redis;
+using EMS.Business.Redis.Data;
 using EMS.Business.Services;
 using EMS.Data.Enums;
 using EMS.Data.Pagination;
@@ -13,6 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EMS.Controllers
 {
@@ -22,13 +28,16 @@ namespace EMS.Controllers
         private readonly IDepartmentService _departmentService;
         private readonly IAzureBlobAvatarService _azureBlobAvatarService;
         private readonly IActivityLogService _activityLogService;
+        private readonly IRedisService _redisService;
 
-        public UserController(IUserService userService, IDepartmentService departmentService, IAzureBlobAvatarService azureBlobAvatarService, IActivityLogService activityLogService)
+        public UserController(IUserService userService, IDepartmentService departmentService, IAzureBlobAvatarService azureBlobAvatarService, 
+            IActivityLogService activityLogService, IRedisService redisService)
         {
             _userService = userService;
             _departmentService = departmentService;
             _azureBlobAvatarService = azureBlobAvatarService;
             _activityLogService = activityLogService;
+            _redisService = redisService;
         }
 
         [Authorize(Roles = "Admin")]
@@ -151,6 +160,17 @@ namespace EMS.Controllers
                 pageIndex = listUsers.PageIndex,
                 totalPages = listUsers.TotalPages
             });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> BackupUser()
+        {
+            var users = await _userService.GetAllUserForBackup();
+
+            var json = JsonSerializer.Serialize(users, new JsonSerializerOptions { WriteIndented = true });
+            var fileName = $"users_backup_{DateTime.Now:yyyyMMddHHmmss}.json";
+
+            return File(Encoding.UTF8.GetBytes(json), "application/json", fileName);
         }
 
 
@@ -292,6 +312,22 @@ namespace EMS.Controllers
                 return NotFound();
             }
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost("save-session")]
+        public async Task<IActionResult> SaveSession([FromBody] UserSessionData sessionData)
+        {
+            string userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId.IsNullOrEmpty())
+            {
+                return NoContent();
+            }
+            else
+            {
+                await _redisService.SaveSessionAsync(userId, sessionData);
+                return Ok(new {message = "Session save successfully"});
+            }
+
         }
 
         private async Task<PaginatedList<UserDto>> GetEmployeesAsync(string searchTerm, int? departmentId, int? gender,

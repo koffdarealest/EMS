@@ -183,5 +183,11 @@ namespace EMS.Data.Repositories.Implements
                 .Select(u => u.Id)
                 .ToListAsync();
         }
+
+        public async Task<List<User>> GetAllForBackup()
+        {
+            return await _context.Users
+                .ToListAsync();
+        }
     }
 }

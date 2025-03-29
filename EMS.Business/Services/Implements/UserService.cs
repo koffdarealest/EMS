@@ -127,5 +127,11 @@ namespace EMS.Business.Services.Implements
         {
             return await _userRepository.GetUserIdsByDepartmentIdAsync(departmentId);
         }
+
+        public async Task<List<UserDto>> GetAllUserForBackup()
+        {
+            var users = await _userRepository.GetAllForBackup();
+            return _mapper.Map<List<UserDto>>(users);
+        }
     }
 }

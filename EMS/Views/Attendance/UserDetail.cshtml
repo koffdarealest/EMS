@@ -1,0 +1,37 @@
+﻿@using EMS.Data.Enums
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model IEnumerable<EMS.Business.Dtos.AttendanceDto>
+
+@{
+    ViewData["Title"] = "User Attendance Details";
+}
+
+<h2 class="text-center my-4">User Attendance Details</h2>
+
+<table class="table table-striped table-bordered">
+    <thead class="table-dark">
+    <tr>
+        <th class="text-center">Check In</th>
+        <th class="text-center">Check Out</th>
+        <th class="text-center">Status</th>
+        <th class="text-center">Worked Hours</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var attendance in Model)
+    {
+        <tr>
+            <td class="text-center">@attendance.CheckIn?.ToString("yyyy-MM-dd HH:mm")</td>
+            <td class="text-center">@(attendance.CheckOut?.ToString("yyyy-MM-dd HH:mm") ?? "Still Working")</td>
+            <td class="text-center">
+                <span class="badge @(attendance.Status == AttendanceStatus.Present ? "bg-success" : "bg-danger")">
+                    @attendance.Status
+                </span>
+            </td>
+            <td class="text-center">@attendance.WorkedHours.ToString("0.##")</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<a asp-action="Index" asp-controller="User" class="btn btn-primary">Back to List</a>
